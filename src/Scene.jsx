@@ -1,94 +1,113 @@
 import React, { useRef, useMemo, Suspense } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import {
-  OrbitControls,
-  PerspectiveCamera,
-  Float,
-  Environment,
-  ContactShadows,
-  Text,
-  Center,
-  useTexture
-} from '@react-three/drei'
+import { Float, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 
-function BoxRounded({ args, radius, smoothness, ...props }) {
-  const shape = useMemo(() => {
-    let shape = new THREE.Shape();
-    let [width, height] = args;
-    let x = -width / 2, y = -height / 2;
-    shape.moveTo(x, y + radius);
-    shape.lineTo(x, y + height - radius);
-    shape.quadraticCurveTo(x, y + height, x + radius, y + height);
-    shape.lineTo(x + width - radius, y + height);
-    shape.quadraticCurveTo(x + width, y + height, x + width, y + height - radius);
-    shape.lineTo(x + width, y + radius);
-    shape.quadraticCurveTo(x + width, y, x + width - radius, y);
-    shape.lineTo(x + radius, y);
-    shape.quadraticCurveTo(x, y, x, y + radius);
-    return shape;
-  }, [args, radius]);
-
-  const extrudeSettings = {
-    depth: args[2],
-    bevelEnabled: true,
-    bevelSegments: smoothness,
-    steps: 1,
-    bevelSize: radius,
-    bevelThickness: radius
-  };
-
-  return (
-    <mesh {...props}>
-      <extrudeGeometry args={[shape, extrudeSettings]} />
-      <meshStandardMaterial color="#ffffff" roughness={0.3} />
-    </mesh>
-  )
+// ── Procedural soft radial texture (for glow + shadow) ────────────
+// Built on a canvas so we don't ship extra image assets.
+function makeRadialTexture(stops) {
+  const size = 512
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = size
+  const ctx = canvas.getContext('2d')
+  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2)
+  stops.forEach(([offset, color]) => g.addColorStop(offset, color))
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, size, size)
+  const tex = new THREE.CanvasTexture(canvas)
+  tex.needsUpdate = true
+  return tex
 }
 
+// ── The hero bottle ───────────────────────────────────────────────
+// The real product photo, floating and tilting toward the cursor.
+// It never rotates far enough to reveal that it's a flat plane, so it
+// reads as a premium floating product shot rather than a spinning sheet.
 function Bottle() {
-  const mesh = useRef()
+  const group = useRef()
   const texture = useTexture('/assets/real_bottle.png')
-  // Reduce specular reflection on the label
   texture.colorSpace = THREE.SRGBColorSpace
+  texture.anisotropy = 8
 
   useFrame((state) => {
-    if (mesh.current) {
-      // Gentle floating and very slight rotation for the 2D plane
-      mesh.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1
-      mesh.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.4) * 0.1
-    }
+    if (!group.current) return
+    const t = state.clock.elapsedTime
+    const { x: px, y: py } = state.pointer // -1..1, follows the mouse over the canvas
+
+    // Gentle vertical float.
+    group.current.position.y = Math.sin(t * 0.8) * 0.12
+
+    // Tilt toward the cursor, plus a slow idle sway so it stays alive even with
+    // no pointer (e.g. on touch devices). Small angles only — never edge-on.
+    const targetY = px * 0.32 + Math.sin(t * 0.35) * 0.06
+    const targetX = -py * 0.16 + Math.sin(t * 0.5) * 0.025
+    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, targetY, 0.06)
+    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, targetX, 0.06)
   })
 
-  // Widened the plane to 4.0 x 6.5 to properly match original image aspect ratio.
+  // Plane sized to the bottle photo's TRUE aspect ratio (1431x3833 = 0.373).
+  // Previous 3.7x6.0 stretched it 65% too wide AND too small; this is taller/slimmer/bigger.
   return (
-    <mesh ref={mesh} position={[0, -0.8, 0]}>
-      <planeGeometry args={[4.0, 6.5]} />
-      <meshBasicMaterial
-        map={texture}
-        transparent={true}
-        alphaTest={0.01}
-        side={THREE.DoubleSide}
-      />
+    <group ref={group}>
+      <mesh>
+        <planeGeometry args={[2.7, 7.2]} />
+        <meshBasicMaterial map={texture} transparent alphaTest={0.04} side={THREE.DoubleSide} toneMapped={false} />
+      </mesh>
+    </group>
+  )
+}
+
+// ── Soft studio glow behind the product ───────────────────────────
+function Glow() {
+  const tex = useMemo(
+    () =>
+      makeRadialTexture([
+        [0.0, 'rgba(196, 240, 230, 0.55)'],
+        [0.35, 'rgba(150, 214, 200, 0.30)'],
+        [1.0, 'rgba(150, 214, 200, 0.0)'],
+      ]),
+    []
+  )
+  return (
+    <mesh position={[0, 0.3, -2.5]} scale={[10, 10, 1]}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial map={tex} transparent depthWrite={false} toneMapped={false} />
     </mesh>
   )
 }
 
-function PeppermintLeaf({ position, rotation, scale = 1 }) {
-  // Use the actual mint leaf image provided by the user
-  const texture = useTexture('/assets/lsdp_Peppermint.png')
-
+// ── Soft contact shadow under the product ─────────────────────────
+function ShadowBlob() {
+  const tex = useMemo(
+    () =>
+      makeRadialTexture([
+        [0.0, 'rgba(20, 45, 55, 0.45)'],
+        [0.55, 'rgba(20, 45, 55, 0.18)'],
+        [1.0, 'rgba(20, 45, 55, 0.0)'],
+      ]),
+    []
+  )
   return (
-    <Float speed={1.5} rotationIntensity={2} floatIntensity={1.5}>
+    <mesh position={[0, -3.05, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[5.5, 3.0, 1]}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial map={tex} transparent depthWrite={false} toneMapped={false} />
+    </mesh>
+  )
+}
+
+// ── Floating peppermint leaves (real depth, gentle motion) ────────
+function PeppermintLeaf({ position, rotation, scale }) {
+  const texture = useTexture('/assets/lsdp_Peppermint.png')
+  return (
+    <Float speed={1.4} rotationIntensity={0.8} floatIntensity={1.1}>
       <mesh position={position} rotation={rotation} scale={scale}>
-        {/* Use a plane or slightly curved geometry. Plane is better for raw images with alpha */}
         <planeGeometry args={[1, 1]} />
         <meshStandardMaterial
           map={texture}
-          transparent={true}
-          alphaTest={0.1} // to handle transparent background cleanly
+          transparent
+          alphaTest={0.1}
           side={THREE.DoubleSide}
-          roughness={0.6}
+          roughness={0.7}
         />
       </mesh>
     </Float>
@@ -98,49 +117,22 @@ function PeppermintLeaf({ position, rotation, scale = 1 }) {
 export default function Scene() {
   return (
     <div className="canvas-container" style={{ width: '100%', height: '100%' }}>
-      <Canvas shadows dpr={[1, 2]}>
-        {/* Adjusted camera to frame the larger bottle without clipping the top */}
-        <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={50} />
-
-        <ambientLight intensity={0.7} />
-        <spotLight position={[10, 15, 10]} angle={0.3} penumbra={1} intensity={2} castShadow />
-        <spotLight position={[-10, 5, -10]} angle={0.3} penumbra={1} intensity={1.5} color="#e0f7fa" />
-
+      <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 9], fov: 45 }}>
+        <ambientLight intensity={0.9} />
+        <directionalLight position={[5, 8, 6]} intensity={1.1} />
+        <directionalLight position={[-6, 2, -4]} intensity={0.5} color="#dff5ef" />
 
         <Suspense fallback={null}>
-          <Environment preset="studio" />
+          <Glow />
 
-          <Float speed={2} rotationIntensity={0.1} floatIntensity={0.2}>
-            <Bottle />
-          </Float>
+          {/* Just two small foreground leaves for depth — the page background
+              already supplies the big drifting leaves, so we don't double up. */}
+          <PeppermintLeaf position={[-2.8, 2.4, 1.0]} rotation={[0.4, 1, 0.2]} scale={0.5} />
+          <PeppermintLeaf position={[2.8, -1.8, 0.8]} rotation={[0.5, 0.5, 0.8]} scale={0.45} />
 
-          {/* Floating Peppermint Leaves */}
-          <PeppermintLeaf position={[-1.5, 2, -1]} rotation={[0.4, 1, 0.2]} scale={0.6} />
-          <PeppermintLeaf position={[2, 0.5, 1]} rotation={[1, 0.2, 1]} scale={0.4} />
-          <PeppermintLeaf position={[-1.2, -1, 0.5]} rotation={[0.5, 0.5, 0.8]} scale={0.7} />
-          <PeppermintLeaf position={[1.5, 2.5, -0.5]} rotation={[0.2, 0.8, 0.1]} scale={0.5} />
-
-          <ContactShadows
-            position={[0, -2.4, 0]}
-            opacity={0.5}
-            scale={10}
-            blur={2}
-            far={3}
-            color="#1a2f3a"
-          />
+          <Bottle />
+          <ShadowBlob />
         </Suspense>
-
-        <OrbitControls
-          enableZoom={true}
-          makeDefault
-          autoRotate
-          autoRotateSpeed={0.5}
-          maxPolarAngle={Math.PI / 2 + 0.1}
-          minPolarAngle={Math.PI / 3}
-          enablePan={false}
-          minDistance={3} // Allows zooming in
-          maxDistance={10} // Prevents zooming out too far
-        />
       </Canvas>
     </div>
   )

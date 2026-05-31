@@ -17,40 +17,121 @@ const FadeIn = ({ children, delay = 0 }) => {
     );
 };
 
-// ── Waitlist signup ───────────────────────────────────────────────
-// Posts to Formspree so it works on static hosting (GitHub Pages) with no backend.
-// SETUP (2 min): create a free form at https://formspree.io, copy its endpoint,
-// and paste it below in place of the placeholder. Until then submissions will fail
-// gracefully with an error message.
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/REPLACE_WITH_FORM_ID";
+// ── Store config ──────────────────────────────────────────────────
+const CLOVER_CHECKOUT_WORKER = 'https://lashoedepeugh-checkout.lashoedepeugh.workers.dev';
+const WEB3FORMS_ACCESS_KEY = '2aa7b618-3036-4ecc-8a7f-a68e50712d80';
+const BOTTLE_PRICE = 14.99;
+const BULK_MIN_QTY = 12;
+const MAX_RETAIL_QTY = 11;
+// Flat shipping per order — mirrors the Cloudflare Worker (display only; the Worker
+// is the source of truth for what's actually charged).
+const shippingFor = (q) => (q >= 5 ? 0 : q >= 3 ? 1.95 : q === 2 ? 3.95 : 5.95);
+const usd = (n) => `$${n.toFixed(2)}`;
 
-const WaitlistForm = () => {
-    const [email, setEmail] = useState('');
-    const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+// ── Retail checkout: Clover Hosted Checkout via the Cloudflare Worker ──
+const BuyWidget = ({ onBulk }) => {
+    const [qty, setQty] = useState(1);
+    const [status, setStatus] = useState('idle'); // idle | loading | error
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const shipping = shippingFor(qty);
+    const subtotal = BOTTLE_PRICE * qty;
+    const total = subtotal + shipping;
+
+    const checkout = async () => {
+        setStatus('loading');
+        setError('');
+        try {
+            const res = await fetch(CLOVER_CHECKOUT_WORKER, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantity: qty }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (data.href) {
+                window.location.href = data.href; // off to Clover's secure hosted page
+            } else {
+                setStatus('error');
+                setError(data.error || 'Checkout is temporarily unavailable. Please try again.');
+            }
+        } catch {
             setStatus('error');
-            setError('Please enter a valid email address.');
+            setError('Network error. Please try again.');
+        }
+    };
+
+    const stepBtn = { width: 44, height: 44, borderRadius: '0.6rem', border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: '1.4rem', cursor: 'pointer', lineHeight: 1 };
+    const row = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'rgba(255,255,255,0.85)', padding: '0.35rem 0' };
+
+    return (
+        <div style={{ maxWidth: 460, margin: '0 auto', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '1rem', padding: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                <span style={{ color: 'rgba(255,255,255,0.7)' }}>Quantity</span>
+                <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} style={stepBtn} aria-label="Decrease quantity">−</button>
+                <span style={{ minWidth: 32, textAlign: 'center', color: '#fff', fontSize: '1.5rem', fontWeight: 700 }}>{qty}</span>
+                <button type="button" onClick={() => setQty((q) => Math.min(MAX_RETAIL_QTY, q + 1))} style={stepBtn} aria-label="Increase quantity">+</button>
+            </div>
+
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '0.75rem 0', marginBottom: '1.5rem' }}>
+                <div style={row}><span>{qty} × bottle</span><span>{usd(subtotal)}</span></div>
+                <div style={row}><span>Shipping (USA)</span><span>{shipping === 0 ? 'FREE' : usd(shipping)}</span></div>
+                <div style={{ ...row, color: '#fff', fontWeight: 700, fontSize: '1.25rem', paddingTop: '0.6rem' }}><span>Total</span><span>{usd(total)}</span></div>
+            </div>
+
+            <button type="button" onClick={checkout} disabled={status === 'loading'} className="btn btn-primary" style={{ width: '100%', background: '#fff', color: '#121f28', fontSize: '1.1rem', padding: '1rem' }}>
+                {status === 'loading' ? 'Taking you to checkout…' : `Buy Now — ${usd(total)}`}
+            </button>
+
+            {status === 'error' && <p style={{ color: '#ffb4b4', fontSize: '0.9rem', marginTop: '0.75rem' }}>{error}</p>}
+
+            <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', marginTop: '1rem' }}>
+                {qty < 5 ? `Add ${5 - qty} more for FREE shipping. ` : 'You unlocked FREE shipping! '}
+                Secure checkout powered by Clover.
+            </p>
+            <button type="button" onClick={onBulk} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.75)', textDecoration: 'underline', cursor: 'pointer', marginTop: '0.75rem', fontSize: '0.9rem' }}>
+                Ordering {BULK_MIN_QTY}+ bottles? Request bulk / wholesale pricing →
+            </button>
+        </div>
+    );
+};
+
+// ── Bulk / wholesale request: emails the details via Web3Forms ──
+const BulkRequestForm = ({ onBack }) => {
+    const [form, setForm] = useState({ name: '', email: '', phone: '', quantity: '', message: '' });
+    const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+    const [error, setError] = useState('');
+    const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+    const submit = async (e) => {
+        e.preventDefault();
+        if (!form.name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) || !form.quantity) {
+            setStatus('error');
+            setError('Please enter your name, a valid email, and the quantity you need.');
             return;
         }
         setStatus('submitting');
         setError('');
         try {
-            const res = await fetch(FORMSPREE_ENDPOINT, {
+            const res = await fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify({ email, _subject: 'New La Shoe de Peugh waitlist signup' }),
+                body: JSON.stringify({
+                    access_key: WEB3FORMS_ACCESS_KEY,
+                    subject: `Bulk Order Request — ${form.quantity} bottles`,
+                    from_name: 'La Shoe de Peugh Website',
+                    name: form.name,
+                    email: form.email,
+                    phone: form.phone,
+                    quantity: form.quantity,
+                    message: form.message,
+                }),
             });
-            if (res.ok) {
+            const data = await res.json().catch(() => ({}));
+            if (data.success) {
                 setStatus('success');
-                setEmail('');
             } else {
-                const data = await res.json().catch(() => ({}));
                 setStatus('error');
-                setError((data.errors && data.errors[0] && data.errors[0].message) || 'Something went wrong. Please try again.');
+                setError(data.message || 'Something went wrong. Please try again.');
             }
         } catch {
             setStatus('error');
@@ -60,41 +141,35 @@ const WaitlistForm = () => {
 
     if (status === 'success') {
         return (
-            <div style={{ maxWidth: '400px', margin: '0 auto', padding: '1.75rem', background: 'rgba(46,139,87,0.18)', borderRadius: '0.75rem', border: '1px solid rgba(255,255,255,0.18)' }}>
-                <p style={{ color: '#fff', fontSize: '1.1rem', margin: 0, lineHeight: 1.6 }}>
-                    You're on the list. We'll email you the moment La Shoe de Peugh goes live. 🌿
-                </p>
+            <div style={{ maxWidth: 460, margin: '0 auto', padding: '2rem', background: 'rgba(46,139,87,0.18)', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.18)' }}>
+                <p style={{ color: '#fff', fontSize: '1.1rem', margin: 0, lineHeight: 1.6 }}>Thanks! Your bulk request is in — we'll email you a custom quote shortly. 🌿</p>
+                <button type="button" onClick={onBack} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', textDecoration: 'underline', cursor: 'pointer', marginTop: '1rem' }}>← Back to checkout</button>
             </div>
         );
     }
 
     return (
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px', margin: '0 auto' }}>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your best email"
-                className="input-premium"
-                required
-                aria-label="Email address"
-            />
-            <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ background: '#fff', color: '#121f28' }}
-                disabled={status === 'submitting'}
-            >
-                {status === 'submitting' ? 'Reserving…' : 'Reserve My Order'}
+        <form onSubmit={submit} style={{ maxWidth: 460, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '0.9rem', textAlign: 'left' }}>
+            <input className="input-premium" placeholder="Your name" value={form.name} onChange={set('name')} required />
+            <input className="input-premium" type="email" placeholder="Email" value={form.email} onChange={set('email')} required />
+            <input className="input-premium" placeholder="Phone (optional)" value={form.phone} onChange={set('phone')} />
+            <input className="input-premium" type="number" min={BULK_MIN_QTY} placeholder={`Quantity needed (${BULK_MIN_QTY}+)`} value={form.quantity} onChange={set('quantity')} required />
+            <textarea className="input-premium" rows={3} placeholder="Anything else? (optional)" value={form.message} onChange={set('message')} style={{ resize: 'vertical' }} />
+            <button type="submit" className="btn btn-primary" disabled={status === 'submitting'} style={{ background: '#fff', color: '#121f28' }}>
+                {status === 'submitting' ? 'Sending…' : 'Request Bulk Pricing'}
             </button>
-            {status === 'error' && (
-                <p style={{ fontSize: '0.85rem', color: '#ffb4b4', margin: 0 }}>{error}</p>
-            )}
-            <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.5rem' }}>
-                No spam — just a heads-up when we launch. Secure checkout coming soon.
-            </p>
+            {status === 'error' && <p style={{ color: '#ffb4b4', fontSize: '0.9rem', margin: 0 }}>{error}</p>}
+            <button type="button" onClick={onBack} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.9rem' }}>← Back to standard checkout</button>
         </form>
     );
+};
+
+// Toggles between buying (1–11) and the bulk request form (12+).
+const StoreWidget = () => {
+    const [mode, setMode] = useState('buy');
+    return mode === 'buy'
+        ? <BuyWidget onBulk={() => setMode('bulk')} />
+        : <BulkRequestForm onBack={() => setMode('buy')} />;
 };
 
 function App() {
@@ -108,7 +183,7 @@ function App() {
                         <a href="#about" className="nav-link">Story</a>
                         <a href="#features" className="nav-link">Features</a>
                         <a href="#gallery" className="nav-link">Gallery</a>
-                        <a href="#notify" className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem' }}>Pre-Order</a>
+                        <a href="#notify" className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem' }}>Buy Now</a>
                     </div>
                 </div>
             </nav>
@@ -141,7 +216,7 @@ function App() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
                         >
-                            <a href="#notify" className="btn btn-primary">Pre-Order Now</a>
+                            <a href="#notify" className="btn btn-primary">Buy Now</a>
                             <a href="#about" className="btn btn-outline">Discover the Science</a>
                         </motion.div>
                     </div>
@@ -357,11 +432,11 @@ function App() {
                 <div className="container" style={{ position: 'relative', zIndex: 1 }}>
                     <FadeIn>
                         <div className="glass-card" style={{ padding: '5rem 3rem', textAlign: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                            <h2 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#fff' }}>Secure Your Bottle</h2>
+                            <h2 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#fff' }}>Order Yours Today</h2>
                             <p style={{ marginBottom: '3rem', fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto 3rem auto' }}>
-                                We are currently finalizing our payment systems, but you can secure your order today. Join the exclusive waitlist to be notified the moment we go live.
+                                Fresh peppermint protection, shipped to your door. Buy a single bottle or stock up — shipping drops as you add more, and orders of 5+ ship FREE.
                             </p>
-                            <WaitlistForm />
+                            <StoreWidget />
                         </div>
                     </FadeIn>
                 </div>
