@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Issue | La Shoe de Peugh</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Montserrat', system-ui, sans-serif;
+        min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(160deg, #a8d8ea 0%, #e8f6f2 60%, #ffffff 100%);
+        color: #121f28; padding: 2rem; text-align: center;
+      }
+      .card {
+        max-width: 560px; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.7); border-radius: 1.5rem;
+        padding: 3.5rem 2.5rem; box-shadow: 0 20px 50px rgba(26,47,58,0.15);
+      }
+      .icon { font-size: 3rem; }
+      h1 { font-family: 'Lora', serif; font-size: clamp(2rem, 5vw, 2.8rem); margin: 1rem 0 0.75rem; color: #1a2f3a; }
+      p { font-size: 1.15rem; line-height: 1.7; color: #3a4a52; margin-bottom: 1rem; }
+      .small { font-size: 0.95rem; color: #6a7a82; }
+      a.btn {
+        display: inline-block; margin-top: 1.5rem; padding: 0.9rem 2.2rem; border-radius: 999px;
+        background: #2e8b57; color: #fff; text-decoration: none; font-weight: 700; letter-spacing: 0.02em;
+        transition: transform 0.2s, background 0.2s;
+      }
+      a.btn:hover { background: #267349; transform: translateY(-2px); }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="icon">🛒</div>
+      <h1>Payment didn't go through</h1>
+      <p>No charge was made. This can happen if a card is declined or the checkout is closed early — no worries, you can try again.</p>
+      <p class="small">Still stuck? Email <strong>lashoedepeugh@aol.com</strong> and we'll help you out.</p>
+      <a class="btn" href="https://lashoedepeugh.com/#notify">Try Again</a>
+    </div>
+  </body>
+</html>
