@@ -90,7 +90,14 @@ export default {
       shipLine.taxRates = tax;
     }
 
-    const payload = { customer: {}, shoppingCart: { lineItems: [bottleLine, shipLine] } };
+    const payload = {
+        customer: {},
+        redirectUrls: {
+            success: 'https://lashoedepeugh.com/thank-you.html',
+            failure: 'https://lashoedepeugh.com/payment-failed.html',
+        },
+        shoppingCart: { lineItems: [bottleLine, shipLine] },
+    };
 
     const endpoint = ENDPOINTS[(env.CLOVER_ENV || 'sandbox').toLowerCase()] || ENDPOINTS.sandbox;
 
