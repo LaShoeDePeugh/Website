@@ -23,9 +23,14 @@ create a Hosted Checkout session, then hands the site a URL to send the customer
 
 ## Pricing (edit the constants at the top of worker.js)
 
-- Bottle: **$14.99** (`priceCents: 1499`)
+- Bottle (volume discount, per bottle): **1 → $14.99 · 2–4 → $12.99 · 5–8 → $12.99 (+free ship) · 9+ → $11.59**
+  (`unitPriceCentsFor()` — MUST stay in sync with `unitPriceFor()` in `src/App.jsx`)
 - Shipping (flat per order): **1 → $5.95 · 2 → $3.95 · 3–4 → $1.95 · 5+ → FREE**
 - Sales tax: **none** for now (`TAX_RATE_MICRO = 0`)
+
+> ⚠️ When you change prices: update BOTH `worker.js` (charges the card) and `src/App.jsx`
+> (what the customer sees), and **redeploy the Worker here** — the git push only updates the
+> website, NOT this Worker. If they don't match, customers get charged a different amount than shown.
 
 ## Test before going live
 

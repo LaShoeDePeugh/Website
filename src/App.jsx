@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Scene from './Scene'
 import { CheckCircle, ShieldCheck, Zap, Lock, Mail, Instagram, Twitter, Facebook } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -20,9 +20,13 @@ const FadeIn = ({ children, delay = 0 }) => {
 // ── Store config ──────────────────────────────────────────────────
 const CLOVER_CHECKOUT_WORKER = 'https://lashoedepeugh-checkout.lashoedepeugh.workers.dev';
 const WEB3FORMS_ACCESS_KEY = '2aa7b618-3036-4ecc-8a7f-a68e50712d80';
-const BOTTLE_PRICE = 14.99;
+const BOTTLE_PRICE = 14.99; // base / single-bottle price
 const BULK_MIN_QTY = 12;
 const MAX_RETAIL_QTY = 11;
+// Volume discount — per-bottle price drops as the cart grows. MUST stay in sync
+// with unitPriceCentsFor() in the Cloudflare Worker (the Worker is what actually
+// charges the card). 1 → $14.99 · 2–4 → $12.99 ea · 5–8 → $12.99 ea (+free ship) · 9–11 → $11.59 ea
+const unitPriceFor = (q) => (q >= 9 ? 11.59 : q >= 2 ? 12.99 : BOTTLE_PRICE);
 // Flat shipping per order — mirrors the Cloudflare Worker (display only; the Worker
 // is the source of truth for what's actually charged).
 const shippingFor = (q) => (q >= 5 ? 0 : q >= 3 ? 1.95 : q === 2 ? 3.95 : 5.95);
@@ -34,8 +38,10 @@ const BuyWidget = ({ onBulk }) => {
     const [status, setStatus] = useState('idle'); // idle | loading | error
     const [error, setError] = useState('');
 
+    const unitPrice = unitPriceFor(qty);
     const shipping = shippingFor(qty);
-    const subtotal = BOTTLE_PRICE * qty;
+    const subtotal = unitPrice * qty;
+    const savings = (BOTTLE_PRICE - unitPrice) * qty;
     const total = subtotal + shipping;
 
     const checkout = async () => {
@@ -73,7 +79,13 @@ const BuyWidget = ({ onBulk }) => {
             </div>
 
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '0.75rem 0', marginBottom: '1.5rem' }}>
-                <div style={row}><span>{qty} × bottle</span><span>{usd(subtotal)}</span></div>
+                <div style={row}><span>{qty} × bottle</span><span>{usd(BOTTLE_PRICE * qty)}</span></div>
+                {savings > 0 && (
+                    <div style={{ ...row, color: '#86e3a3' }}>
+                        <span>Volume discount ({usd(unitPrice)}/bottle)</span>
+                        <span>−{usd(savings)}</span>
+                    </div>
+                )}
                 <div style={row}><span>Shipping (USA)</span><span>{shipping === 0 ? 'FREE' : usd(shipping)}</span></div>
                 <div style={{ ...row, color: '#fff', fontWeight: 700, fontSize: '1.25rem', paddingTop: '0.6rem' }}><span>Total</span><span>{usd(total)}</span></div>
             </div>
@@ -85,7 +97,13 @@ const BuyWidget = ({ onBulk }) => {
             {status === 'error' && <p style={{ color: '#ffb4b4', fontSize: '0.9rem', marginTop: '0.75rem' }}>{error}</p>}
 
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', marginTop: '1rem' }}>
-                {qty < 5 ? `Add ${5 - qty} more for FREE shipping. ` : 'You unlocked FREE shipping! '}
+                {qty < 2
+                    ? `Add 1 more to save — 2+ bottles are just ${usd(unitPriceFor(2))} each. `
+                    : qty < 5
+                        ? `Add ${5 - qty} more for FREE shipping. `
+                        : qty < 9
+                            ? `Add ${9 - qty} more to drop to ${usd(unitPriceFor(9))}/bottle. `
+                            : 'Best price unlocked — FREE shipping too! '}
                 Secure checkout powered by Clover.
             </p>
             <button type="button" onClick={onBulk} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.75)', textDecoration: 'underline', cursor: 'pointer', marginTop: '0.75rem', fontSize: '0.9rem' }}>
@@ -172,6 +190,45 @@ const StoreWidget = () => {
         : <BulkRequestForm onBack={() => setMode('buy')} />;
 };
 
+// ── Visitor counter ───────────────────────────────────────────────
+// Per-browser counter: seeds a random starting number on first visit, bumps it
+// each time the page loads, and ticks up slowly while the visitor is on the page.
+// Stored in localStorage so it keeps climbing for returning visitors.
+const VisitorCounter = () => {
+    const [count, setCount] = useState(null);
+
+    useEffect(() => {
+        const KEY = 'lsdp_visitor_count';
+        let n = parseInt(localStorage.getItem(KEY), 10);
+        if (!Number.isFinite(n)) {
+            n = 13000 + Math.floor(Math.random() * 4000); // random seed: 13,000–17,000
+        }
+        n += 1; // count this visit
+        localStorage.setItem(KEY, String(n));
+        setCount(n);
+
+        // Gentle live tick while they're on the page.
+        const id = setInterval(() => {
+            setCount((c) => {
+                const next = c + 1;
+                localStorage.setItem(KEY, String(next));
+                return next;
+            });
+        }, 9000);
+        return () => clearInterval(id);
+    }, []);
+
+    if (count === null) return null;
+
+    return (
+        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem', marginTop: '1.5rem', letterSpacing: '0.05em' }}>
+            <span role="img" aria-label="eyes">👀</span>{' '}
+            <strong style={{ color: 'rgba(255,255,255,0.7)' }}>{count.toLocaleString()}</strong> have visited to save their soles{' '}
+            <span role="img" aria-label="sneaker" style={{ fontSize: '2.5rem', verticalAlign: 'middle', display: 'inline-block', marginLeft: '0.25rem' }}>👟</span>
+        </p>
+    );
+};
+
 function App() {
     return (
         <div className="app">
@@ -233,14 +290,14 @@ function App() {
                         <div className="glass-card" style={{ padding: '5rem 3rem', textAlign: 'center', background: 'var(--bg-gradient)' }}>
                             <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '1.5rem' }}>Eliminate Odors with Absolute Confidence</h2>
                             <p style={{ fontSize: '1.25rem', color: 'var(--text-light)', maxWidth: '800px', margin: '0 auto 2rem auto', lineHeight: '1.8' }}>
-                                Peppermint oil fights smelly feet and shoes by leveraging its natural antibacterial and antifungal properties. It actively kills odor-causing microbes and inhibits fungal growth, while its strong, refreshing scent (due to menthol) revitalizes the skin and provides a long-lasting clean feeling.
+                                Peppermint oil tackles smelly feet and shoes with its crisp, naturally deodorizing power. It neutralizes stubborn odors at the source, while its strong, refreshing menthol scent revitalizes the skin and provides a long-lasting clean, cool feeling.
                             </p>
 
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', textAlign: 'left', marginTop: '3rem' }}>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2rem', borderRadius: '1rem' }}>
                                     <h4 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: 'var(--accent)' }}>How It Works on Feet</h4>
                                     <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                        <li style={{ marginBottom: '1rem' }}><strong>Kills Bacteria & Fungi:</strong> Contains compounds that actively kill odor-causing bacteria and fungi.</li>
+                                        <li style={{ marginBottom: '1rem' }}><strong>Neutralizes Odor:</strong> Peppermint oil naturally breaks down and neutralizes the odors that build up on tired feet.</li>
                                         <li><strong>Cooling & Soothing:</strong> Menthol provides a revitalizing, cooling sensation and helps soothe tired feet.</li>
                                     </ul>
                                 </div>
@@ -248,7 +305,7 @@ function App() {
                                     <h4 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: '#4a90e2' }}>How It Works on Shoes</h4>
                                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                                         <li style={{ marginBottom: '1rem' }}><strong>Deodorizes & Freshens:</strong> Strong aroma effectively neutralizes and helps keep away unpleasant shoe odors.</li>
-                                        <li><strong>Inhibits Growth:</strong> By killing microbes, it prevents new odors from forming inside the shoes.</li>
+                                        <li><strong>Keeps Them Fresh:</strong> Regular use helps keep new odors from building up inside the shoes.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -269,8 +326,8 @@ function App() {
                                 <div style={{ background: 'rgba(46, 139, 87, 0.1)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
                                     <ShieldCheck size={32} color="var(--accent)" />
                                 </div>
-                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Antimicrobial Action</h3>
-                                <p style={{ color: 'var(--text-light)' }}>Actively targets and eliminates odor-causing bacteria and fungi directly at the source for optimal odor control.</p>
+                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Odor Neutralizing</h3>
+                                <p style={{ color: 'var(--text-light)' }}>Actively targets and neutralizes odors directly at the source for fresh, long-lasting odor control.</p>
                             </div>
                         </FadeIn>
                         <FadeIn delay={0.2}>
@@ -352,7 +409,7 @@ function App() {
                         ))}
                     </div>
                     <FadeIn>
-                        <p style={{ textAlign: 'center', marginTop: '4rem', fontSize: '1.2rem', color: 'var(--text-light)' }}>
+                        <p style={{ textAlign: 'center', marginTop: '4rem', fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.3, color: 'var(--text-light)' }}>
                             Perfect for <strong>sneakers, boots, heels, work shoes & more.</strong>
                         </p>
                     </FadeIn>
@@ -458,6 +515,7 @@ function App() {
                         <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</a>
                     </div>
                     <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>&copy; 2026 La Shoe de Peugh, Owosso, MI 48867. All rights reserved.</p>
+                    <VisitorCounter />
                 </div>
             </footer>
         </div>

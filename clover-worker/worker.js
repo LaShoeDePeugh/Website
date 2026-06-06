@@ -15,9 +15,20 @@
 // ── Pricing (all amounts in CENTS) ──
 const PRODUCT = {
   name: 'La Shoe de Peugh — Shoe & Foot Deodorizing Spray',
-  priceCents: 1499, // $14.99 per bottle
+  priceCents: 1499, // $14.99 base / single-bottle price
 };
 const MAX_QTY = 12;
+// Volume discount — per-bottle price (in cents) drops as the order grows.
+// MUST stay in sync with unitPriceFor() in the website (src/App.jsx).
+//   1 bottle    → $14.99 ea
+//   2–4 bottles → $12.99 ea
+//   5–8 bottles → $12.99 ea (plus FREE shipping)
+//   9+ bottles  → $11.59 ea (plus FREE shipping)
+function unitPriceCentsFor(qty) {
+  if (qty >= 9) return 1159; // $11.59 each
+  if (qty >= 2) return 1299; // $12.99 each
+  return PRODUCT.priceCents; // $14.99 single
+}
 // Shipping tiers — flat amount PER ORDER, in cents (drops as cart grows):
 //   1 bottle    → $5.95
 //   2 bottles   → $3.95
@@ -78,7 +89,7 @@ export default {
     // ── Shipping by quantity tier (see shippingCentsFor above) ──
     const shippingCents = shippingCentsFor(qty);
 
-    const bottleLine = { name: PRODUCT.name, price: PRODUCT.priceCents, unitQty: qty };
+    const bottleLine = { name: PRODUCT.name, price: unitPriceCentsFor(qty), unitQty: qty };
     const shipLine = {
       name: `Shipping (USA — ${qty} bottle${qty > 1 ? 's' : ''})`,
       price: shippingCents,
