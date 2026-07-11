@@ -507,12 +507,14 @@ function App() {
                         <a href="#" style={{ color: 'rgba(255,255,255,0.6)', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}><Instagram size={24} /></a>
                         <a href="#" style={{ color: 'rgba(255,255,255,0.6)', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}><Twitter size={24} /></a>
                         <a href="#" style={{ color: 'rgba(255,255,255,0.6)', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}><Facebook size={24} /></a>
-                        <a href="#" style={{ color: 'rgba(255,255,255,0.6)', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}><Mail size={24} /></a>
+                        <a href="mailto:lashoedepeugh@aol.com" aria-label="Email La Shoe de Peugh" style={{ color: 'rgba(255,255,255,0.6)', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}><Mail size={24} /></a>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginBottom: '2rem' }}>
-                        <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy Policy</a>
-                        <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms of Use</a>
-                        <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</a>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem 2rem', fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginBottom: '2rem' }}>
+                        <a href="/privacy.html" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'inherit'}>Privacy Policy</a>
+                        <a href="/terms.html" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'inherit'}>Terms of Use</a>
+                        <a href="/shipping.html" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'inherit'}>Shipping</a>
+                        <a href="/refund.html" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'inherit'}>Refunds &amp; Returns</a>
+                        <a href="/contact.html" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'inherit'}>Contact</a>
                     </div>
                     <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>&copy; 2026 La Shoe de Peugh, Owosso, MI 48867. All rights reserved.</p>
                     <VisitorCounter />

@@ -1,0 +1,176 @@
+/* Shared styles for La Shoe de Peugh legal / info pages.
+   Matches the brand palette + fonts used on the main site and thank-you.html. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #2e8b57;
+  --green-dark: #267349;
+  --ink: #1a2f3a;
+  --body: #3a4a52;
+  --muted: #6a7a82;
+  --line: #e3ebe8;
+}
+
+body {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  color: var(--body);
+  background: linear-gradient(180deg, #e8f6f2 0%, #f6fbf9 40%, #ffffff 100%);
+  min-height: 100vh;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 0;
+}
+.site-header .brand {
+  font-family: 'Lora', serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.site-header .home-link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+}
+.site-header .home-link:hover { color: var(--green-dark); text-decoration: underline; }
+
+/* Content */
+main.legal {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 1rem;
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 0.6rem;
+}
+main.legal h1 {
+  font-family: 'Lora', serif;
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.updated {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+main.legal h2 {
+  font-family: 'Lora', serif;
+  font-size: 1.3rem;
+  color: var(--ink);
+  margin: 2.2rem 0 0.6rem;
+}
+main.legal h3 {
+  font-size: 1.02rem;
+  color: var(--ink);
+  margin: 1.3rem 0 0.4rem;
+}
+main.legal p { margin-bottom: 1rem; }
+main.legal ul { margin: 0 0 1rem 1.2rem; }
+main.legal li { margin-bottom: 0.45rem; }
+main.legal a { color: var(--green); }
+main.legal a:hover { color: var(--green-dark); }
+main.legal strong { color: var(--ink); }
+
+.lead {
+  font-size: 1.1rem;
+  color: var(--body);
+}
+
+/* Simple info table (shipping rates, contact rows) */
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0 1.5rem;
+  font-size: 0.98rem;
+}
+.rate-table th, .rate-table td {
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+.rate-table th { color: var(--ink); font-weight: 700; }
+.rate-table td:last-child { font-weight: 600; color: var(--ink); }
+
+.note {
+  background: #f0f8f4;
+  border: 1px solid #cfe6d9;
+  border-radius: 0.75rem;
+  padding: 1rem 1.2rem;
+  font-size: 0.95rem;
+  color: var(--body);
+  margin: 1.5rem 0;
+}
+
+/* Contact card buttons */
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+.btn {
+  display: inline-block;
+  padding: 0.85rem 1.8rem;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: transform 0.2s, background 0.2s;
+}
+.btn:hover { background: var(--green-dark); color: #fff; transform: translateY(-2px); }
+.btn.secondary {
+  background: transparent;
+  color: var(--green);
+  border: 2px solid var(--green);
+}
+.btn.secondary:hover { background: var(--green); color: #fff; }
+
+/* Footer */
+.legal-footer {
+  max-width: 820px;
+  margin: 3rem auto 0;
+  padding: 2rem 1.5rem 3rem;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.legal-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1.4rem;
+  margin-bottom: 1rem;
+}
+.legal-footer nav a {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--body);
+  text-decoration: none;
+}
+.legal-footer nav a:hover { color: var(--green); }
+.legal-footer p {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
