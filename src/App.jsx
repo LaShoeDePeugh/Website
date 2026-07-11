@@ -19,6 +19,9 @@ const FadeIn = ({ children, delay = 0 }) => {
 
 // ── Store config ──────────────────────────────────────────────────
 const CLOVER_CHECKOUT_WORKER = 'https://lashoedepeugh-checkout.lashoedepeugh.workers.dev';
+// Global visitor counter Worker (Cloudflare + KV). Source + deploy steps in
+// web/visitor-worker/. Update this if you deploy it under a different name/subdomain.
+const VISITOR_COUNTER_WORKER = 'https://lashoedepeugh-visitor.lashoedepeugh.workers.dev';
 const WEB3FORMS_ACCESS_KEY = '2aa7b618-3036-4ecc-8a7f-a68e50712d80';
 const BOTTLE_PRICE = 14.99; // base / single-bottle price
 const BULK_MIN_QTY = 12;
@@ -197,31 +200,39 @@ const StoreWidget = () => {
 };
 
 // ── Visitor counter ───────────────────────────────────────────────
-// Per-browser counter: seeds a random starting number on first visit, bumps it
-// each time the page loads, and ticks up slowly while the visitor is on the page.
-// Stored in localStorage so it keeps climbing for returning visitors.
+// Real, shared global tally. The count lives in a Cloudflare Worker + KV store
+// (see web/visitor-worker/); every visitor sees the same number. This browser is
+// counted once (first visit), then just reads the live total on return visits.
+// If the Worker is unreachable, we show the last number we saw — or nothing —
+// but never a fabricated one.
 const VisitorCounter = () => {
     const [count, setCount] = useState(null);
 
     useEffect(() => {
-        const KEY = 'lsdp_visitor_count';
-        let n = parseInt(localStorage.getItem(KEY), 10);
-        if (!Number.isFinite(n)) {
-            n = 13000 + Math.floor(Math.random() * 4000); // random seed: 13,000–17,000
-        }
-        n += 1; // count this visit
-        localStorage.setItem(KEY, String(n));
-        setCount(n);
+        const COUNTED = 'lsdp_counted';   // has this browser been counted?
+        const CACHE = 'lsdp_count_cache'; // last real total we displayed
+        let cancelled = false;
 
-        // Gentle live tick while they're on the page.
-        const id = setInterval(() => {
-            setCount((c) => {
-                const next = c + 1;
-                localStorage.setItem(KEY, String(next));
-                return next;
-            });
-        }, 9000);
-        return () => clearInterval(id);
+        // Show the last known real total immediately (avoids a blank flash).
+        const cached = parseInt(localStorage.getItem(CACHE), 10);
+        if (Number.isFinite(cached)) setCount(cached);
+
+        // First visit from this browser increments the shared total; returning
+        // visits just read it.
+        const firstVisit = localStorage.getItem(COUNTED) !== '1';
+        const url = `${VISITOR_COUNTER_WORKER}/${firstVisit ? 'hit' : 'count'}`;
+
+        fetch(url, { method: firstVisit ? 'POST' : 'GET' })
+            .then((r) => r.json())
+            .then((d) => {
+                if (cancelled || typeof d.count !== 'number') return;
+                setCount(d.count);
+                localStorage.setItem(CACHE, String(d.count));
+                localStorage.setItem(COUNTED, '1');
+            })
+            .catch(() => { /* offline / worker down: keep cached value or stay hidden */ });
+
+        return () => { cancelled = true; };
     }, []);
 
     if (count === null) return null;
