@@ -115,13 +115,16 @@ const BuyWidget = ({ onBulk }) => {
 
 // ── Bulk / wholesale request: emails the details via Web3Forms ──
 const BulkRequestForm = ({ onBack }) => {
-    const [form, setForm] = useState({ name: '', email: '', phone: '', quantity: '', message: '' });
+    const [form, setForm] = useState({ name: '', email: '', phone: '', quantity: '', message: '', botcheck: '' });
     const [status, setStatus] = useState('idle'); // idle | submitting | success | error
     const [error, setError] = useState('');
     const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
     const submit = async (e) => {
         e.preventDefault();
+        // Honeypot: humans never see or fill this field. If it's set, it's a bot —
+        // silently pretend success so it doesn't retry, and send nothing.
+        if (form.botcheck) { setStatus('success'); return; }
         if (!form.name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) || !form.quantity) {
             setStatus('error');
             setError('Please enter your name, a valid email, and the quantity you need.');
@@ -142,6 +145,7 @@ const BulkRequestForm = ({ onBack }) => {
                     phone: form.phone,
                     quantity: form.quantity,
                     message: form.message,
+                    botcheck: form.botcheck, // Web3Forms server-side honeypot
                 }),
             });
             const data = await res.json().catch(() => ({}));
@@ -168,6 +172,8 @@ const BulkRequestForm = ({ onBack }) => {
 
     return (
         <form onSubmit={submit} style={{ maxWidth: 460, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '0.9rem', textAlign: 'left' }}>
+            {/* Honeypot — hidden from humans; bots that fill it are silently dropped */}
+            <input type="text" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden="true" value={form.botcheck} onChange={set('botcheck')} style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }} />
             <input className="input-premium" placeholder="Your name" value={form.name} onChange={set('name')} required />
             <input className="input-premium" type="email" placeholder="Email" value={form.email} onChange={set('email')} required />
             <input className="input-premium" placeholder="Phone (optional)" value={form.phone} onChange={set('phone')} />
