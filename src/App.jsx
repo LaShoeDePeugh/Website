@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Scene from './Scene'
 import { CheckCircle, ShieldCheck, Zap, Lock, Mail, Instagram, Twitter, Facebook } from 'lucide-react'
 import { motion } from 'framer-motion'
+import HCaptcha from '@hcaptcha/react-hcaptcha'
 
 // Custom FadeIn component for reusable animations
 const FadeIn = ({ children, delay = 0 }) => {
@@ -122,6 +123,9 @@ const BulkRequestForm = ({ onBack }) => {
     const [status, setStatus] = useState('idle'); // idle | submitting | success | error
     const [error, setError] = useState('');
     const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+    const [captchaToken, setCaptchaToken] = useState('');
+    const captchaRef = useRef(null);
+    const HCAPTCHA_SITEKEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2'; // Web3Forms free-plan shared hCaptcha key
 
     const submit = async (e) => {
         e.preventDefault();
@@ -131,6 +135,11 @@ const BulkRequestForm = ({ onBack }) => {
         if (!form.name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) || !form.quantity) {
             setStatus('error');
             setError('Please enter your name, a valid email, and the quantity you need.');
+            return;
+        }
+        if (!captchaToken) {
+            setStatus('error');
+            setError('Please complete the “I am human” check below.');
             return;
         }
         setStatus('submitting');
@@ -149,6 +158,7 @@ const BulkRequestForm = ({ onBack }) => {
                     quantity: form.quantity,
                     message: form.message,
                     botcheck: form.botcheck, // Web3Forms server-side honeypot
+                    'h-captcha-response': captchaToken,
                 }),
             });
             const data = await res.json().catch(() => ({}));
@@ -157,10 +167,14 @@ const BulkRequestForm = ({ onBack }) => {
             } else {
                 setStatus('error');
                 setError(data.message || 'Something went wrong. Please try again.');
+                captchaRef.current?.resetCaptcha();
+                setCaptchaToken('');
             }
         } catch {
             setStatus('error');
             setError('Network error. Please try again.');
+            captchaRef.current?.resetCaptcha();
+            setCaptchaToken('');
         }
     };
 
@@ -182,6 +196,15 @@ const BulkRequestForm = ({ onBack }) => {
             <input className="input-premium" placeholder="Phone (optional)" value={form.phone} onChange={set('phone')} />
             <input className="input-premium" type="number" min={BULK_MIN_QTY} placeholder={`Quantity needed (${BULK_MIN_QTY}+)`} value={form.quantity} onChange={set('quantity')} required />
             <textarea className="input-premium" rows={3} placeholder="Anything else? (optional)" value={form.message} onChange={set('message')} style={{ resize: 'vertical' }} />
+            <HCaptcha
+                ref={captchaRef}
+                sitekey={HCAPTCHA_SITEKEY}
+                reCaptchaCompat={false}
+                theme="dark"
+                onVerify={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken('')}
+                onError={() => setCaptchaToken('')}
+            />
             <button type="submit" className="btn btn-primary" disabled={status === 'submitting'} style={{ background: '#fff', color: '#121f28' }}>
                 {status === 'submitting' ? 'Sending…' : 'Request Bulk Pricing'}
             </button>
