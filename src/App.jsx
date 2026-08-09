@@ -338,7 +338,7 @@ function App() {
                                     <h4 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: 'var(--accent)' }}>How It Works on Feet</h4>
                                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                                         <li style={{ marginBottom: '1rem' }}><strong>Fresher Feet:</strong> A crisp peppermint scent helps tired feet smell clean and fresh.</li>
-                                        <li><strong>Cooling & Soothing:</strong> Menthol provides a revitalizing, cooling sensation and helps soothe tired feet.</li>
+                                        <li><strong>Cool & Refreshing:</strong> Menthol provides a revitalizing, cooling sensation on tired feet.</li>
                                     </ul>
                                 </div>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2rem', borderRadius: '1rem' }}>
@@ -396,7 +396,7 @@ function App() {
                                     <Zap size={32} color="var(--accent)" />
                                 </div>
                                 <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>The Peppermint Difference</h3>
-                                <p style={{ color: 'var(--text-light)' }}>Infused with crisp peppermint oil to provide a revitalizing, cooling sensation while naturally enhancing freshness and soothing the skin.</p>
+                                <p style={{ color: 'var(--text-light)' }}>Infused with crisp peppermint oil to provide a revitalizing, cooling sensation while naturally enhancing freshness.</p>
                             </div>
                         </FadeIn>
                     </div>
