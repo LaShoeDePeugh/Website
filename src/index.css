@@ -213,10 +213,18 @@ section {
 }
 
 /* Grid Layouts */
+/* Fixed 2x2 rather than auto-fit: auto-fit spread the four cards across a single
+   row on wide screens. Stacks to one column on phones. */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .gallery-grid {

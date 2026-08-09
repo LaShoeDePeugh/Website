@@ -360,7 +360,9 @@ function App() {
                     <FadeIn>
                         <h2 className="section-title">Engineered for Performance</h2>
                     </FadeIn>
-                    <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+                    {/* Columns live in .features-grid (index.css) so the 2x2 can collapse to
+                        a single column on phones — an inline style can't carry a media query. */}
+                    <div className="features-grid">
                         <FadeIn delay={0.1}>
                             <div className="glass-card" style={{ padding: '3rem 2rem', height: '100%' }}>
                                 <div style={{ background: 'rgba(46, 139, 87, 0.1)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
@@ -375,8 +377,8 @@ function App() {
                                 <div style={{ background: 'rgba(168, 216, 234, 0.2)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
                                     <CheckCircle size={32} color="#4a90e2" />
                                 </div>
-                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Non-Medicated & Safe</h3>
-                                <p style={{ color: 'var(--text-light)' }}>Our formula is completely non-medicated and safe for daily use on both feet and footwear without any sticky residue.</p>
+                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Non-Medicated and Natural</h3>
+                                <p style={{ color: 'var(--text-light)' }}>Our formula is completely non-medicated and made with natural ingredients — with no sticky residue on feet or footwear.</p>
                             </div>
                         </FadeIn>
                         <FadeIn delay={0.3}>
