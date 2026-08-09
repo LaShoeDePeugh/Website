@@ -297,27 +297,13 @@ section {
   }
 }
 
-.hero-content {
+/* .hero is a flex container, so its .container child was shrink-to-fit (728px
+   instead of 1280px). That indented the hero copy ~280px further than the navbar
+   and every other section, and pushed it into the 3D bottle's canvas. flex:1 makes
+   it fill the hero so max-width + margin:auto centre it like everywhere else. */
+.hero>.container {
   flex: 1;
-  z-index: 2;
-}
-
-.hero-title {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  color: var(--text);
-}
-
-.hero-tagline {
-  font-size: 1.5rem;
-  color: var(--text-light);
-  margin-bottom: 2rem;
-}
-
-.hero-3d {
-  flex: 1;
-  height: 100%;
-  position: relative;
+  width: 100%;
 }
 
 .canvas-container {
@@ -325,19 +311,18 @@ section {
   height: 100%;
 }
 
-@media (max-width: 968px) {
-  .hero {
-    flex-direction: column;
-    text-align: center;
-    padding-top: 5rem;
+/* Between ~969-1200px the absolutely-positioned 3D bottle (55% wide) can crowd
+   the hero copy. Narrow the text column through that range so they never collide. */
+@media (min-width: 969px) and (max-width: 1200px) {
+  .hero-content {
+    max-width: 40%;
   }
+}
 
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .hero-3d {
-    min-height: 400px;
-    width: 100%;
+/* Phones: drop the text nav links but KEEP the Buy Now pill so the CTA is
+   always one tap away. */
+@media (max-width: 768px) {
+  .nav-links-text {
+    display: none;
   }
 }

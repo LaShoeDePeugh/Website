@@ -417,11 +417,15 @@ function App() {
                     <FadeIn>
                         <h2 className="section-title">Our Premium Design</h2>
                     </FadeIn>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', justifyContent: 'center' }}>
+                    {/* The source photos are ~3,500-3,800px tall and were being drawn at
+                        400px — a ~9x downscale that smeared the label into mush. Wider
+                        columns + a taller cap cut that to ~6x, which is what actually makes
+                        the label readable; the images themselves were always sharp. */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', justifyContent: 'center' }}>
                         {["20260201_193347.png", "20260201_193632.png", "20260201_194022.png"].map((imgSrc, index) => (
                             <FadeIn key={index} delay={index * 0.1}>
-                                <div className="glass-card" style={{ padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                                    <img src={`/assets/${imgSrc}`} alt={`Product View ${index + 1}`} style={{ maxHeight: '400px', objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.15))' }} loading="lazy" />
+                                <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                                    <img src={`/assets/${imgSrc}`} alt={`Product View ${index + 1}`} style={{ width: '100%', height: 'clamp(400px, 46vw, 620px)', objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.15))' }} loading="lazy" />
                                 </div>
                             </FadeIn>
                         ))}
