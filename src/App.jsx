@@ -510,7 +510,7 @@ function App() {
                         <p style={{ textAlign: 'center', color: 'var(--text-dark)', maxWidth: '720px', margin: '0 auto 4rem auto', fontSize: 'clamp(1.35rem, 2.2vw, 1.65rem)', lineHeight: 1.6 }}>
                             Discover why athletes, professionals, and everyday people trust{' '}
                             <strong>La Shoe de Peugh</strong>{' '}
-                            <em style={{ fontStyle: 'italic', fontWeight: 700 }}>To Save Their Soles</em>
+                            <em style={{ fontStyle: 'italic', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '0.18em' }}>To Save Their Soles</em>
                             <ShoePrints />
                         </p>
                     </FadeIn>
@@ -527,7 +527,7 @@ function App() {
                                     <div style={{ width: '40px', height: '40px', background: 'var(--accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>JR</div>
                                     <div>
                                         <h4 style={{ margin: 0, fontSize: '1rem' }}>James R.</h4>
-                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Healthcare Worker</span>
+                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Healthcare Worker · Tennessee</span>
                                     </div>
                                 </div>
                             </div>
@@ -545,7 +545,7 @@ function App() {
                                     <div style={{ width: '40px', height: '40px', background: '#4a90e2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>SK</div>
                                     <div>
                                         <h4 style={{ margin: 0, fontSize: '1rem' }}>Sarah K.</h4>
-                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Fitness Enthusiast</span>
+                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Fitness Enthusiast · Michigan</span>
                                     </div>
                                 </div>
                             </div>
@@ -563,7 +563,7 @@ function App() {
                                     <div style={{ width: '40px', height: '40px', background: 'var(--text-dark)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>MT</div>
                                     <div>
                                         <h4 style={{ margin: 0, fontSize: '1rem' }}>Marcus T.</h4>
-                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Parent & Coach</span>
+                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Parent & Coach · Michigan</span>
                                     </div>
                                 </div>
                             </div>
