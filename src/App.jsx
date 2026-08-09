@@ -349,6 +349,17 @@ function App() {
                                     </ul>
                                 </div>
                             </div>
+
+                            {/* Cosmetic (non-drug) disclaimer. NOTE: a disclaimer does not
+                                neutralise a non-compliant claim — FDA reads a product's overall
+                                claims to decide whether it is being marketed as a drug. This
+                                supports the claim cleanup, it does not substitute for it.
+                                Deliberately NOT the "These statements have not been evaluated
+                                by the FDA" line: that is the DSHEA dietary-supplement
+                                disclaimer and does not apply to a cosmetic. */}
+                            <p style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(18,31,40,0.12)', fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--text-light)', maxWidth: '760px', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.7 }}>
+                                La Shoe de Peugh Shoe &amp; Foot Deodorizing Spray is a non-medicated foot and shoe deodorizer. This product does not mask odors. It is not a drug and is not intended to diagnose, treat, cure, or prevent any disease or condition. Individual results may vary.
+                            </p>
                         </div>
                     </FadeIn>
                 </div>
