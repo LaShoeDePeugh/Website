@@ -314,7 +314,7 @@ function App() {
                             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
                         >
                             <a href="#notify" className="btn btn-primary">Buy Now</a>
-                            <a href="#about" className="btn btn-outline">Discover the Science</a>
+                            <a href="#about" className="btn btn-outline">How It Works</a>
                         </motion.div>
                     </div>
                 </div>
@@ -417,7 +417,7 @@ function App() {
             <section id="product-showcase" style={{ padding: '4rem 0', position: 'relative', zIndex: 10 }}>
                 <div className="container">
                     <FadeIn>
-                        <h2 className="section-title">Our Premium Design</h2>
+                        <h2 className="section-title">A Closer Look</h2>
                     </FadeIn>
                     {/* Was three bottle photos. The two back/side shots showed the OLD label,
                         whose "antimicrobial properties" / "Antimicrobial Formula" wording is an
