@@ -524,9 +524,9 @@ function App() {
                                     "I work 12-hour shifts constantly on my feet. This spray is a lifesaver. The peppermint smells amazing and it completely handles the odors. Highly recommend."
                                 </p>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                    <div style={{ width: '40px', height: '40px', background: 'var(--accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>JR</div>
+                                    <div style={{ width: '40px', height: '40px', background: 'var(--accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>JS</div>
                                     <div>
-                                        <h4 style={{ margin: 0, fontSize: '1rem' }}>James R.</h4>
+                                        <h4 style={{ margin: 0, fontSize: '1rem' }}>James S.</h4>
                                         <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Factory Maintenance · Tennessee</span>
                                     </div>
                                 </div>
