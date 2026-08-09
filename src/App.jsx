@@ -304,7 +304,7 @@ function App() {
                             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                             style={{ maxWidth: '600px', lineHeight: '1.8' }}
                         >
-                            Step into freshness with La Shoe de Peugh Shoe & Foot Deodorizing Spray, the effortless way to keep every step clean, cool, and confidently odor-free. Made with a crisp peppermint scent, this spray works instantly to neutralize unwanted odors while leaving shoes and feet smelling refreshingly clean.
+                            Step into freshness with La Shoe de Peugh Shoe & Foot Deodorizing Spray, the effortless way to keep every step clean, cool, and confidently odor-free. Made with a crisp peppermint scent, this spray works with natural deodorizers to help keep away unwanted odors while leaving shoes and feet smelling refreshingly clean.
                         </motion.p>
                         <motion.div
                             className="btn-group"
@@ -328,23 +328,23 @@ function App() {
                 <div className="container">
                     <FadeIn>
                         <div className="glass-card" style={{ padding: '5rem 3rem', textAlign: 'center', background: 'var(--bg-gradient)' }}>
-                            <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '1.5rem' }}>Eliminate Odors with Absolute Confidence</h2>
+                            <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '1.5rem' }}>Step Out with Confidence</h2>
                             <p style={{ fontSize: '1.25rem', color: 'var(--text-light)', maxWidth: '800px', margin: '0 auto 2rem auto', lineHeight: '1.8' }}>
-                                Peppermint oil tackles smelly feet and shoes with its crisp, naturally deodorizing power. It neutralizes stubborn odors at the source, while its strong, refreshing menthol scent revitalizes the skin and provides a long-lasting clean, cool feeling.
+                                Peppermint oil tackles smelly feet and shoes with its crisp, natural power. It works to help keep stubborn odors away, while its strong, refreshing menthol scent revitalizes the skin and provides a long-lasting clean, cool feeling.
                             </p>
 
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', textAlign: 'left', marginTop: '3rem' }}>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2rem', borderRadius: '1rem' }}>
                                     <h4 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: 'var(--accent)' }}>How It Works on Feet</h4>
                                     <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                        <li style={{ marginBottom: '1rem' }}><strong>Neutralizes Odor:</strong> Peppermint oil naturally breaks down and neutralizes the odors that build up on tired feet.</li>
+                                        <li style={{ marginBottom: '1rem' }}><strong>Fresher Feet:</strong> A crisp peppermint scent helps tired feet smell clean and fresh.</li>
                                         <li><strong>Cooling & Soothing:</strong> Menthol provides a revitalizing, cooling sensation and helps soothe tired feet.</li>
                                     </ul>
                                 </div>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2rem', borderRadius: '1rem' }}>
                                     <h4 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: '#4a90e2' }}>How It Works on Shoes</h4>
                                     <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                        <li style={{ marginBottom: '1rem' }}><strong>Deodorizes & Freshens:</strong> Strong aroma effectively neutralizes and helps keep away unpleasant shoe odors.</li>
+                                        <li style={{ marginBottom: '1rem' }}><strong>Stay Fresh & Confident:</strong> Natural deodorizers help to keep shoes fresh after a long day of active wear.</li>
                                         <li><strong>Keeps Them Fresh:</strong> Regular use helps keep new odors from building up inside the shoes.</li>
                                     </ul>
                                 </div>
@@ -366,8 +366,8 @@ function App() {
                                 <div style={{ background: 'rgba(46, 139, 87, 0.1)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
                                     <ShieldCheck size={32} color="var(--accent)" />
                                 </div>
-                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Odor Neutralizing</h3>
-                                <p style={{ color: 'var(--text-light)' }}>Actively targets and neutralizes odors directly at the source for fresh, long-lasting odor control.</p>
+                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Stay Fresh Longer</h3>
+                                <p style={{ color: 'var(--text-light)' }}>Natural deodorizers help keep shoes and feet smelling fresh, wear after wear.</p>
                             </div>
                         </FadeIn>
                         <FadeIn delay={0.2}>
