@@ -347,7 +347,7 @@ function App() {
                         <div className="glass-card" style={{ padding: '5rem 3rem', textAlign: 'center', background: 'var(--bg-gradient)' }}>
                             <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '1.5rem' }}>Step Out with Confidence</h2>
                             <p style={{ fontSize: '1.25rem', color: 'var(--text-light)', maxWidth: '800px', margin: '0 auto 2rem auto', lineHeight: '1.8' }}>
-                                Peppermint oil tackles smelly feet and shoes with its crisp, natural power. It works to help keep stubborn odors away, while its strong, refreshing menthol scent revitalizes the skin and provides a long-lasting clean, cool feeling.
+                                Peppermint oil tackles smelly feet and shoes with its crisp, natural power. It works to help keep stubborn odors away, while its strong, refreshing scent provides a long-lasting clean, cool feeling.
                             </p>
 
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', textAlign: 'left', marginTop: '3rem' }}>
@@ -355,7 +355,7 @@ function App() {
                                     <h4 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: 'var(--accent)' }}>How It Works on Feet</h4>
                                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                                         <li style={{ marginBottom: '1rem' }}><strong>Fresher Feet:</strong> A crisp peppermint scent helps tired feet smell clean and fresh.</li>
-                                        <li><strong>Cool & Refreshing:</strong> Menthol provides a revitalizing, cooling sensation on tired feet.</li>
+                                        <li><strong>Cool & Refreshing:</strong> A revitalizing, cooling sensation on tired feet.</li>
                                     </ul>
                                 </div>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2rem', borderRadius: '1rem' }}>
@@ -375,7 +375,7 @@ function App() {
                                 by the FDA" line: that is the DSHEA dietary-supplement
                                 disclaimer and does not apply to a cosmetic. */}
                             <p style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(18,31,40,0.12)', fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--text-light)', maxWidth: '760px', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.7 }}>
-                                La Shoe de Peugh Shoe &amp; Foot Deodorizing Spray is a non-medicated foot and shoe deodorizer. This product does not mask odors. It is not a drug and is not intended to diagnose, treat, cure, or prevent any disease or condition. Individual results may vary.
+                                La Shoe de Peugh Shoe &amp; Foot Deodorizing Spray is a non-medicated foot and shoe deodorizer. This product contains a peppermint scent that does not mask odors. It is not a drug and is not intended to diagnose, treat, cure, or prevent any disease or condition. Individual results may vary.
                             </p>
                         </div>
                     </FadeIn>
@@ -521,7 +521,7 @@ function App() {
                                     ★★★★★
                                 </div>
                                 <p style={{ fontSize: '1.1rem', fontStyle: 'italic', marginBottom: '2rem', lineHeight: '1.6' }}>
-                                    "I work 12-hour shifts constantly on my feet. This spray is a lifesaver. The peppermint smells amazing and it completely handles the odors. Highly recommend."
+                                    "I work 12-hour shifts constantly on my feet. This spray is a lifesaver. The peppermint smells amazing and it handles my odor problems. Highly recommend."
                                 </p>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                     <div style={{ width: '40px', height: '40px', background: 'var(--accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>JS</div>
@@ -580,7 +580,7 @@ function App() {
                         <div className="glass-card" style={{ padding: '5rem 3rem', textAlign: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                             <h2 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#fff' }}>Order Yours Today</h2>
                             <p style={{ marginBottom: '3rem', fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto 3rem auto' }}>
-                                Fresh peppermint protection, shipped to your door. Buy a single bottle or stock up — shipping drops as you add more, and orders of 5+ ship FREE.
+                                Confidence &amp; Freshness shipped to your door. Buy a single bottle or stock up — shipping drops as you add more, and orders of 5+ ship FREE.
                             </p>
                             <StoreWidget />
                         </div>
