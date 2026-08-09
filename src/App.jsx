@@ -345,7 +345,7 @@ function App() {
                                     <h4 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: '#4a90e2' }}>How It Works on Shoes</h4>
                                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                                         <li style={{ marginBottom: '1rem' }}><strong>Stay Fresh & Confident:</strong> Natural deodorizers help to keep shoes fresh after a long day of active wear.</li>
-                                        <li><strong>Keeps Them Fresh:</strong> Regular use helps keep new odors from building up inside the shoes.</li>
+                                        <li><strong>Keeps Them Fresh:</strong> Continued use brings effective results. It only takes a few seconds for a quick mist of freshness!</li>
                                     </ul>
                                 </div>
                             </div>
