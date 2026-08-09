@@ -417,18 +417,27 @@ function App() {
                     <FadeIn>
                         <h2 className="section-title">Our Premium Design</h2>
                     </FadeIn>
-                    {/* The source photos are ~3,500-3,800px tall and were being drawn at
-                        400px — a ~9x downscale that smeared the label into mush. Wider
-                        columns + a taller cap cut that to ~6x, which is what actually makes
-                        the label readable; the images themselves were always sharp. */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', justifyContent: 'center' }}>
-                        {["20260201_193347.png", "20260201_193632.png", "20260201_194022.png"].map((imgSrc, index) => (
-                            <FadeIn key={index} delay={index * 0.1}>
-                                <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                                    <img src={`/assets/${imgSrc}`} alt={`Product View ${index + 1}`} style={{ width: '100%', height: 'clamp(400px, 46vw, 620px)', objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.15))' }} loading="lazy" />
-                                </div>
-                            </FadeIn>
-                        ))}
+                    {/* Was three bottle photos. The two back/side shots showed the OLD label,
+                        whose "antimicrobial properties" / "Antimicrobial Formula" wording is an
+                        FDA drug claim (and contradicted "non-medicated" on the same label), so
+                        they were replaced by the corrected flat label artwork. The flat artwork
+                        also reads far better than a curved label wrapped around a bottle:
+                        1545px of source across ~830px on screen is a ~1.9x downscale, versus
+                        the ~9x that made the photographed labels unreadable. */}
+                    <div className="showcase-grid">
+                        <FadeIn>
+                            <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                                <img src="/assets/20260201_193347.png" alt="La Shoe de Peugh Shoe &amp; Foot Deodorizing Spray bottle, front label" style={{ width: '100%', height: 'clamp(400px, 46vw, 620px)', objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.15))' }} loading="lazy" />
+                            </div>
+                        </FadeIn>
+                        <FadeIn delay={0.1}>
+                            <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                                {/* The artwork carries its own white ground, so rounding it and
+                                    floating it on a shadow makes that read as the printed label
+                                    itself rather than a white rectangle pasted on the glass. */}
+                                <img src="/assets/label_full.png" alt="The full product label: a non-medicated deodorizing mist spray. Contains natural ingredients, no residue build-up, natural fragrance, no chemicals, safe for fabrics, natural deodorizer. Ingredients: distilled water, alcohol-free steam-distilled witch hazel, 100% pure and natural peppermint essential oil steam-distilled from the leaf, calcium bentonite. Net weight 8 oz. Made in the USA." style={{ width: '100%', height: 'auto', objectFit: 'contain', borderRadius: '0.75rem', boxShadow: '0 12px 32px rgba(18, 31, 40, 0.16)' }} loading="lazy" />
+                            </div>
+                        </FadeIn>
                     </div>
                 </div>
             </section>

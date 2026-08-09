@@ -252,6 +252,23 @@ section {
   transform: scale(1.05);
 }
 
+/* Product showcase: tall bottle photo beside the wide flat label artwork.
+   The label needs the extra width to stay readable, so it gets 2 of the 3 columns. */
+.showcase-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  /* centre, not stretch: the label is wide and short while the bottle is tall and
+     narrow, so equal-height cards left the label marooned in empty space. */
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .showcase-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Form Styles */
 .input-premium {
   flex: 1;
