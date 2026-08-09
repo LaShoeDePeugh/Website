@@ -358,7 +358,7 @@ function App() {
             <section id="features">
                 <div className="container">
                     <FadeIn>
-                        <h2 className="section-title">Engineered for Performance</h2>
+                        <h2 className="section-title">What Makes It Different</h2>
                     </FadeIn>
                     {/* Columns live in .features-grid (index.css) so the 2x2 can collapse to
                         a single column on phones — an inline style can't carry a media query. */}
