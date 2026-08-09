@@ -269,6 +269,23 @@ const VisitorCounter = () => {
     );
 };
 
+// ── Shoe-sole prints ──────────────────────────────────────────────
+// Unicode has no shoe-print character (👣 is BARE feet), so the mark is drawn:
+// a forefoot pad + a separate heel pad, which is what reads as a shoe tread
+// rather than a footprint. Inherits colour via currentColor and stays crisp at
+// any size, unlike an emoji.
+// A single elongated sole outline with a pinched waist reads as a shoe far better
+// than a forefoot/heel pad pair, which just turns to blobs at text size.
+const ShoePrints = ({ style }) => (
+    <svg viewBox="0 0 124 120" role="img" aria-label="shoe prints" style={{ height: '2em', width: 'auto', verticalAlign: '-0.7em', marginLeft: '0.4rem', ...style }}>
+        <defs>
+            <path id="lsdp-sole" d="M30 2c12 0 20 10 20 24 0 10-4 16-6 24-2 8 2 16 2 24 0 14-7 23-16 23s-16-9-16-23c0-8 4-16 2-24-2-8-6-14-6-24C10 12 18 2 30 2Z" />
+        </defs>
+        <use href="#lsdp-sole" transform="translate(2 16) rotate(-12 30 50)" fill="currentColor" opacity="0.5" />
+        <use href="#lsdp-sole" transform="translate(62 0) rotate(12 30 50)" fill="currentColor" opacity="0.8" />
+    </svg>
+);
+
 function App() {
     return (
         <div className="app">
@@ -487,8 +504,14 @@ function App() {
                 <div className="container">
                     <FadeIn>
                         <h2 className="section-title">What People Are Saying</h2>
-                        <p style={{ textAlign: 'center', color: 'var(--text-light)', maxWidth: '600px', margin: '0 auto 4rem auto', fontSize: '1.2rem' }}>
-                            Discover why athletes, professionals, and everyday people trust La Shoe de Peugh for guaranteed freshness.
+                        {/* "guaranteed freshness" claimed a guarantee that exists nowhere on the
+                            site or in the refund policy. "Saving their soles" also echoes the
+                            footer visitor counter, so the two now share a voice. */}
+                        <p style={{ textAlign: 'center', color: 'var(--text-dark)', maxWidth: '720px', margin: '0 auto 4rem auto', fontSize: 'clamp(1.35rem, 2.2vw, 1.65rem)', lineHeight: 1.6 }}>
+                            Discover why athletes, professionals, and everyday people trust{' '}
+                            <strong>La Shoe de Peugh</strong>{' '}
+                            <em style={{ fontStyle: 'italic', fontWeight: 700 }}>To Save Their Soles</em>
+                            <ShoePrints />
                         </p>
                     </FadeIn>
                     <div className="testimonials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
