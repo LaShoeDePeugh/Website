@@ -20,6 +20,7 @@ const FadeIn = ({ children, delay = 0 }) => {
 
 // ── Store config ──────────────────────────────────────────────────
 const CLOVER_CHECKOUT_WORKER = 'https://lashoedepeugh-checkout.lashoedepeugh.workers.dev';
+const ASSURANCE_CARD_URL = 'https://produs-ccs-assurancecard-service.sgsonline.net/assurancecard/be8e7fbc4499573ff31aefd66804accf2201af850b432cbe2ec26a817d27c314/assurancecard';
 // Global visitor counter Worker (Cloudflare + KV). Source + deploy steps in
 // web/visitor-worker/. Update this if you deploy it under a different name/subdomain.
 const VISITOR_COUNTER_WORKER = 'https://lashoedepeugh-visitor.lashoedepeugh.workers.dev';
@@ -98,7 +99,21 @@ const BuyWidget = ({ onBulk }) => {
                 {status === 'loading' ? 'Taking you to checkout…' : `Buy Now — ${usd(total)}`}
             </button>
 
-            {status === 'error' && <p style={{ color: '#ffb4b4', fontSize: '0.9rem', marginTop: '0.75rem' }}>{error}</p>}
+            {/* Clover security Assurance Card (VikingCloud PCI badge) — opens the certificate in a small window */}
+            <a
+                href={ASSURANCE_CARD_URL}
+                target="assurance_card"
+                rel="noopener"
+                onClick={(e) => {
+                    e.preventDefault();
+                    window.open(ASSURANCE_CARD_URL, 'assurance_card', 'width=500,height=535,menubar=no,resizable,scrollbars,location=no,top=100,left=100');
+                }}
+                style={{ display: 'block', width: 'fit-content', margin: '0.9rem auto 0' }}
+            >
+                <img src="https://produs-ccs-assurancecard-service.sgsonline.net/img/thumb.png" alt="VikingCloud Assurance Card — view our payment security certificate" style={{ display: 'block', width: 180, height: 'auto' }} />
+            </a>
+
+            {status === 'error' &&<p style={{ color: '#ffb4b4', fontSize: '0.9rem', marginTop: '0.75rem' }}>{error}</p>}
 
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', marginTop: '1rem' }}>
                 {qty < 2
