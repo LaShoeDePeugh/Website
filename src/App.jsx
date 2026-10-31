@@ -18,6 +18,66 @@ const FadeIn = ({ children, delay = 0 }) => {
     );
 };
 
+// One "Fresh Fits" block: title + photo, with an optional clip that plays over the
+// photo on hover/focus. Phones have no hover, so there the block crossing the middle
+// of the screen plays instead. Clips only download once they first play.
+const GalleryTile = ({ title, image, clip }) => {
+    const tileRef = useRef(null);
+    const videoRef = useRef(null);
+    const [playing, setPlaying] = useState(false);
+
+    const start = () => {
+        if (!videoRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        videoRef.current.play().catch(() => {});
+    };
+    const stop = () => {
+        if (!videoRef.current) return;
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+        setPlaying(false);
+    };
+
+    useEffect(() => {
+        if (!clip || !window.matchMedia('(hover: none)').matches) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => (entry.isIntersecting ? start() : stop()),
+            { rootMargin: '-50% 0px -50% 0px' }
+        );
+        observer.observe(tileRef.current);
+        return () => observer.disconnect();
+    }, [clip]);
+
+    return (
+        <div
+            ref={tileRef}
+            className="gallery-item glass-card"
+            tabIndex={clip ? 0 : undefined}
+            onMouseEnter={start}
+            onMouseLeave={stop}
+            onFocus={start}
+            onBlur={stop}
+        >
+            <h3 className="gallery-title">{title}</h3>
+            <div className="gallery-media">
+                <img src={`/assets/${image}`} alt={title} loading="lazy" />
+                {clip && (
+                    <video
+                        ref={videoRef}
+                        className={playing ? 'is-playing' : ''}
+                        src={`/assets/video/${clip}`}
+                        muted
+                        loop
+                        playsInline
+                        preload="none"
+                        aria-hidden="true"
+                        onPlaying={() => setPlaying(true)}
+                    />
+                )}
+            </div>
+        </div>
+    );
+};
+
 // ── Store config ──────────────────────────────────────────────────
 const CLOVER_CHECKOUT_WORKER = 'https://lashoedepeugh-checkout.lashoedepeugh.workers.dev';
 const ASSURANCE_CARD_URL = 'https://produs-ccs-assurancecard-service.sgsonline.net/assurancecard/be8e7fbc4499573ff31aefd66804accf2201af850b432cbe2ec26a817d27c314/assurancecard';
@@ -495,14 +555,18 @@ function App() {
                     </FadeIn>
                     <div className="gallery-grid">
                         {[
-                            "lsdp_gym_shoes.jpg", "lsdp_office_shoes.jpg", "lsdp_work_boots.jpg",
-                            "lsdp_slippers.jpg", "lsdp_kids_shoes.jpg", "lsdp_skate_shoes.jpg",
-                            "lsdp_winter_boots.jpg", "lsdp_motorcycle_boots.jpg", "lsdp_jogging_shoes.jpg"
-                        ].map((imgSrc, index) => (
-                            <FadeIn key={index} delay={index * 0.05}>
-                                <div className="gallery-item glass-card">
-                                    <img src={`/assets/${imgSrc}`} alt={`LaShoeDePeugh Application ${index + 1}`} loading="lazy" />
-                                </div>
+                            { title: "Gym Shoes", image: "lsdp_gym_shoes_clean.jpg", clip: "lsdp_gym_shoes.mp4" },
+                            { title: "Dress Shoes", image: "lsdp_office_shoes_clean.jpg", clip: "lsdp_office_shoes.mp4" },
+                            { title: "Hiking Boots", image: "lsdp_work_boots_clean.jpg", clip: "lsdp_work_boots.mp4" },
+                            { title: "House Slippers", image: "lsdp_slippers_clean.jpg", clip: "lsdp_slippers.mp4" },
+                            { title: "Kids Shoes", image: "lsdp_kids_shoes_clean.jpg", clip: "lsdp_kids_shoes.mp4" },
+                            { title: "Skate Shoes", image: "lsdp_skate_shoes_clean.jpg", clip: "lsdp_skate_shoes.mp4" },
+                            { title: "Winter Boots", image: "lsdp_winter_boots_clean.jpg", clip: "lsdp_winter_boots.mp4" },
+                            { title: "Motorcycle Boots", image: "lsdp_motorcycle_boots_clean.jpg", clip: "lsdp_motorcycle_boots.mp4" },
+                            { title: "Jogging Shoes", image: "lsdp_jogging_shoes_clean.jpg", clip: "lsdp_jogging_shoes.mp4" }
+                        ].map((tile, index) => (
+                            <FadeIn key={tile.title} delay={index * 0.05}>
+                                <GalleryTile {...tile} />
                             </FadeIn>
                         ))}
                     </div>
