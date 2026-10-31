@@ -336,28 +336,32 @@ const VisitorCounter = () => {
     if (count === null) return null;
 
     return (
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem', marginTop: '1.5rem', letterSpacing: '0.05em' }}>
-            <span role="img" aria-label="eyes">👀</span>{' '}
-            <strong style={{ color: 'rgba(255,255,255,0.7)' }}>{count.toLocaleString()}</strong> have visited to save their soles{' '}
-            <span role="img" aria-label="sneaker" style={{ fontSize: '2.5rem', verticalAlign: 'middle', display: 'inline-block', marginLeft: '0.25rem' }}>👟</span>
+        <p className="visitor-counter">
+            <ShoePrints />
+            <span><strong>{count.toLocaleString()}</strong> have visited to save their soles</span>
+            <ShoePrints />
         </p>
     );
 };
 
 // ── Shoe-sole prints ──────────────────────────────────────────────
 // Unicode has no shoe-print character (👣 is BARE feet), so the mark is drawn:
-// a forefoot pad + a separate heel pad, which is what reads as a shoe tread
-// rather than a footprint. Inherits colour via currentColor and stays crisp at
-// any size, unlike an emoji.
-// A single elongated sole outline with a pinched waist reads as a shoe far better
-// than a forefoot/heel pad pair, which just turns to blobs at text size.
+// a forefoot and a separate heel, both cut by tread lines, which is what reads as
+// a shoe sole at text size. Inherits colour via currentColor.
 const ShoePrints = ({ style }) => (
-    <svg viewBox="0 0 124 120" role="img" aria-label="shoe prints" style={{ height: '2em', width: 'auto', verticalAlign: '-0.7em', marginLeft: '0.4rem', ...style }}>
+    <svg viewBox="0 0 124 124" role="img" aria-label="shoe prints" style={{ height: '2.47em', width: 'auto', flexShrink: 0, ...style }}>
         <defs>
-            <path id="lsdp-sole" d="M30 2c12 0 20 10 20 24 0 10-4 16-6 24-2 8 2 16 2 24 0 14-7 23-16 23s-16-9-16-23c0-8 4-16 2-24-2-8-6-14-6-24C10 12 18 2 30 2Z" />
+            <mask id="lsdp-tread" maskUnits="userSpaceOnUse" x="0" y="0" width="60" height="110">
+                <rect width="60" height="110" fill="#fff" />
+                <path d="M0 14 30 8 60 14M0 25 30 19 60 25M0 36 30 30 60 36M0 47 30 41 60 47M0 79 30 73 60 79M0 90 30 84 60 90" fill="none" stroke="#000" strokeWidth="3.5" />
+            </mask>
+            <g id="lsdp-sole" mask="url(#lsdp-tread)">
+                <path d="M30 2C44 2 52 14 52 30 52 42 47 50 44 59H16C13 50 8 42 8 30 8 14 16 2 30 2Z" />
+                <path d="M17 67H43C44 76 44 83 42 91 40 101 35 107 30 107S20 101 18 91C16 83 16 76 17 67Z" />
+            </g>
         </defs>
-        <use href="#lsdp-sole" transform="translate(2 16) rotate(-12 30 50)" fill="currentColor" opacity="0.5" />
-        <use href="#lsdp-sole" transform="translate(62 0) rotate(12 30 50)" fill="currentColor" opacity="0.8" />
+        <use href="#lsdp-sole" transform="translate(2 16) rotate(-10 30 55)" fill="currentColor" opacity="0.55" />
+        <use href="#lsdp-sole" transform="translate(62 0) rotate(10 30 55)" fill="currentColor" opacity="0.9" />
     </svg>
 );
 
@@ -366,6 +370,7 @@ function App() {
         <div className="app">
             {/* Premium Navigation */}
             <nav className="navbar">
+                <VisitorCounter />
                 <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 style={{ fontSize: '1.2rem', margin: 0 }}>LA SHOE DE PEUGH</h2>
                     <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
@@ -590,7 +595,7 @@ function App() {
                             Discover why athletes, professionals, and everyday people trust{' '}
                             <strong>La Shoe de Peugh</strong>{' '}
                             <em style={{ fontStyle: 'italic', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '0.18em' }}>To Save Their Soles</em>
-                            <ShoePrints />
+                            <ShoePrints style={{ height: '2em', verticalAlign: '-0.7em', marginLeft: '0.4rem' }} />
                         </p>
                     </FadeIn>
                     <div className="testimonials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
@@ -685,7 +690,6 @@ function App() {
                         <a href="/contact.html" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'inherit'}>Contact</a>
                     </div>
                     <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>&copy; 2026 La Shoe de Peugh, Owosso, MI 48867. All rights reserved.</p>
-                    <VisitorCounter />
                 </div>
             </footer>
         </div>

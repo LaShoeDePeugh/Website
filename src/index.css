@@ -12,7 +12,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 80px;
+  scroll-padding-top: 140px;
   /* Offset for fixed nav */
 }
 
@@ -90,7 +90,7 @@ h4 {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 1rem 0;
+  padding: 0 0 1rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }
@@ -166,7 +166,7 @@ h4 {
   display: flex;
   align-items: center;
   position: relative;
-  padding-top: 5rem;
+  padding-top: 10rem;
 }
 
 .hero-content {
@@ -328,7 +328,7 @@ section {
   .hero {
     flex-direction: column;
     text-align: center;
-    padding-top: 8rem;
+    padding-top: 10rem;
   }
 
   .hero-content {
@@ -378,4 +378,46 @@ section {
   .nav-links-text {
     display: none;
   }
+}
+
+/* Visitor counter: slim band across the top of the navbar */
+.visitor-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--text-dark);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+
+.visitor-counter strong {
+  margin-right: 0.15em;
+  color: #e3c67b;
+  font-style: normal;
+  font-size: 1.1em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* The navbar wraps taller on phones, so everything below it needs more room */
+@media (max-width: 768px) {
+  html {
+    scroll-padding-top: 215px;
+  }
+
+  .hero {
+    padding-top: 14.5rem;
+  }
+}
+
+.visitor-counter svg {
+  height: 1.7em !important;
+  color: #e3c67b;
 }
