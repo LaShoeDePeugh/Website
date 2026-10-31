@@ -591,11 +591,12 @@ function App() {
                         {/* "guaranteed freshness" claimed a guarantee that exists nowhere on the
                             site or in the refund policy. "Saving their soles" also echoes the
                             footer visitor counter, so the two now share a voice. */}
-                        <p style={{ textAlign: 'center', color: 'var(--text-dark)', maxWidth: '720px', margin: '0 auto 4rem auto', fontSize: 'clamp(1.35rem, 2.2vw, 1.65rem)', lineHeight: 1.6 }}>
-                            Discover why athletes, professionals, and everyday people trust{' '}
-                            <strong>La Shoe de Peugh</strong>{' '}
-                            <em style={{ fontStyle: 'italic', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '0.18em' }}>To Save Their Soles</em>
-                            <ShoePrints style={{ height: '2em', verticalAlign: '-0.7em', marginLeft: '0.4rem' }} />
+                        <p className="testimonials-intro">
+                            <span>Discover why athletes, professionals, and everyday people trust</span>
+                            <span className="testimonials-tagline">
+                                <span><strong>La Shoe de Peugh</strong> <em>To Save Their Soles</em></span>
+                                <ShoePrints />
+                            </span>
                         </p>
                     </FadeIn>
                     <div className="testimonials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>

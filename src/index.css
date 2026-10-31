@@ -380,6 +380,37 @@ section {
   }
 }
 
+/* Testimonials intro: two lines; on phones the long first line wraps in two
+   rather than shrinking too small to read. */
+.testimonials-intro {
+  margin: 0 auto 4rem auto;
+  text-align: center;
+  color: var(--text-dark);
+  font-size: clamp(1rem, 3.75vw, 1.5rem);
+  line-height: 1.5;
+}
+
+.testimonials-intro > span {
+  display: block;
+  text-wrap: balance;
+}
+
+.testimonials-tagline {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  white-space: nowrap;
+  /* Scales down on phones so the prints stay beside the words */
+  font-size: min(1em, 3.75vw);
+}
+
+.testimonials-tagline em {
+  font-style: italic;
+  font-weight: 700;
+}
+
 /* Visitor counter: slim band across the top of the navbar */
 .visitor-counter {
   display: flex;
