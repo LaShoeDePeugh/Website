@@ -40,7 +40,7 @@ const BOTTLE_BOTTOM = BOTTLE_Y - BOTTLE_H * 0.47 // where the bottle actually "l
 
 function Bottle() {
   const group = useRef()
-  const texture = useTexture('/assets/real_bottle.png')
+  const texture = useTexture('/assets/hero_bottle.webp')
   texture.colorSpace = THREE.SRGBColorSpace
   // The label is minified ~5.7x (758px of source body -> ~134px on screen), and at
   // that ratio plain trilinear mipmapping smears the lettering. Max anisotropy is

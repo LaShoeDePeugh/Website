@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Scene from './Scene'
-import { CheckCircle, ShieldCheck, Zap, Lock, Mail, Instagram, Twitter, Facebook } from 'lucide-react'
+import { CheckCircle, ShieldCheck, Zap, Lock, Mail } from 'lucide-react'
 import { motion } from 'framer-motion'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 
@@ -374,10 +374,13 @@ function App() {
                 <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 style={{ fontSize: '1.2rem', margin: 0 }}>LA SHOE DE PEUGH</h2>
                     <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-                        <a href="#about" className="nav-link">Story</a>
-                        <a href="#features" className="nav-link">Features</a>
-                        <a href="#gallery" className="nav-link">Gallery</a>
-                        <a href="#notify" className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem' }}>Buy Now</a>
+                        {/* Text links hide on phones (index.css); Buy Now always stays. */}
+                        <div className="nav-links-text">
+                            <a href="#about" className="nav-link">Story</a>
+                            <a href="#features" className="nav-link">Features</a>
+                            <a href="#gallery" className="nav-link">Gallery</a>
+                        </div>
+                        <a href="#notify" className="btn btn-primary" style={{ padding: '0.75rem 1.5rem', fontSize: '0.9rem' }}>Buy Now</a>
                     </div>
                 </div>
             </nav>
@@ -386,6 +389,14 @@ function App() {
             <section className="hero">
                 <div className="container" style={{ display: 'flex', height: '100%' }}>
                     <div className="hero-content">
+                        <motion.p
+                            className="hero-eyebrow"
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                        >
+                            Peppermint Shoe &amp; Foot Spray
+                        </motion.p>
                         <motion.h1
                             className="hero-title"
                             initial={{ opacity: 0, y: 30 }}
@@ -399,9 +410,9 @@ function App() {
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-                            style={{ maxWidth: '600px', lineHeight: '1.8' }}
+                            style={{ maxWidth: '600px', lineHeight: '1.5' }}
                         >
-                            Step into freshness with La Shoe de Peugh Shoe & Foot Deodorizing Spray, the effortless way to keep every step clean, cool, and confidently odor-free. Made with a crisp peppermint scent, this spray works with natural deodorizers to help keep away unwanted odors while leaving shoes and feet smelling refreshingly clean.
+                            A crisp peppermint mist for shoes and feet. Natural deodorizers help keep away unwanted odors, leaving every step smelling clean and fresh.
                         </motion.p>
                         <motion.div
                             className="btn-group"
@@ -413,6 +424,15 @@ function App() {
                             <a href="#notify" className="btn btn-primary">Buy Now</a>
                             <a href="#about" className="btn btn-outline">How It Works</a>
                         </motion.div>
+                        <motion.p
+                            className="hero-trust"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.8, delay: 0.6 }}
+                        >
+                            <span className="stars" aria-hidden="true">★★★★★</span>
+                            <span>From {usd(BOTTLE_PRICE)} · Free shipping on 5+ · Based in Owosso, MI</span>
+                        </motion.p>
                     </div>
                 </div>
                 <div className="hero-3d">
@@ -473,7 +493,7 @@ function App() {
                     <div className="features-grid">
                         <FadeIn delay={0.1}>
                             <div className="glass-card" style={{ padding: '3rem 2rem', height: '100%' }}>
-                                <div style={{ background: 'rgba(46, 139, 87, 0.1)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
+                                <div style={{ background: 'rgba(46, 139, 87, 0.12)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
                                     <ShieldCheck size={32} color="var(--accent)" />
                                 </div>
                                 <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Stay Fresh Longer</h3>
@@ -482,7 +502,7 @@ function App() {
                         </FadeIn>
                         <FadeIn delay={0.2}>
                             <div className="glass-card" style={{ padding: '3rem 2rem', height: '100%' }}>
-                                <div style={{ background: 'rgba(168, 216, 234, 0.2)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
+                                <div style={{ background: 'rgba(74, 144, 226, 0.12)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
                                     <CheckCircle size={32} color="#4a90e2" />
                                 </div>
                                 <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Non-Medicated and Natural</h3>
@@ -491,7 +511,7 @@ function App() {
                         </FadeIn>
                         <FadeIn delay={0.3}>
                             <div className="glass-card" style={{ padding: '3rem 2rem', height: '100%' }}>
-                                <div style={{ background: 'rgba(255, 193, 7, 0.1)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
+                                <div style={{ background: 'rgba(255, 193, 7, 0.12)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
                                     <Lock size={32} color="#ffc107" />
                                 </div>
                                 <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Locking Spray Nozzle</h3>
@@ -500,7 +520,7 @@ function App() {
                         </FadeIn>
                         <FadeIn delay={0.4}>
                             <div className="glass-card" style={{ padding: '3rem 2rem', height: '100%' }}>
-                                <div style={{ background: 'rgba(46, 139, 87, 0.1)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
+                                <div style={{ background: 'rgba(46, 139, 87, 0.12)', padding: '1rem', borderRadius: '1rem', display: 'inline-block', marginBottom: '1.5rem' }}>
                                     <Zap size={32} color="var(--accent)" />
                                 </div>
                                 <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>The Peppermint Difference</h3>
@@ -537,7 +557,7 @@ function App() {
                     <div className="showcase-grid">
                         <FadeIn>
                             <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                                <img src="/assets/20260201_193347.png" alt="La Shoe de Peugh Shoe &amp; Foot Deodorizing Spray bottle, front label" style={{ width: '100%', height: 'clamp(400px, 46vw, 620px)', objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.15))' }} loading="lazy" />
+                                <img src="/assets/bottle_front.webp" alt="La Shoe de Peugh Shoe &amp; Foot Deodorizing Spray bottle, front label" style={{ width: '100%', height: 'clamp(400px, 46vw, 620px)', objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.15))' }} loading="lazy" />
                             </div>
                         </FadeIn>
                         <FadeIn delay={0.1}>
@@ -549,6 +569,22 @@ function App() {
                             </div>
                         </FadeIn>
                     </div>
+
+                    {/* Mid-page buy moment, so the price isn't only at the very bottom */}
+                    <FadeIn>
+                        <div className="glass-card cta-band">
+                            <img src="/assets/bottle_thumb.webp" alt="" aria-hidden="true" loading="lazy" />
+                            <div className="cta-band-text">
+                                <strong>Starting at {usd(BOTTLE_PRICE)}</strong>
+                                {/* Comparison is to 4 oz natural mint sprays (~$14-15: Rocket Pure, GIDDY,
+                                    Elite Sportz, Lumi), checked 2026-11-11. Not every brand is 4 oz
+                                    (Gold Standard 6 oz, Pura D'Or 8 oz), so keep the "4 oz" qualifier. */}
+                                <span className="cta-band-size">Our 8 oz bottle is twice the size of 4 oz competitor sprays, at about the same price.</span>
+                                <span>As low as {usd(unitPriceFor(9))} a bottle when you stock up · Free shipping on 5+</span>
+                            </div>
+                            <a href="#notify" className="btn btn-primary">Buy Now</a>
+                        </div>
+                    </FadeIn>
                 </div>
             </section>
 
@@ -576,7 +612,7 @@ function App() {
                         ))}
                     </div>
                     <FadeIn>
-                        <p style={{ textAlign: 'center', marginTop: '4rem', fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.3, color: 'var(--text-light)' }}>
+                        <p style={{ textAlign: 'center', marginTop: '4rem', fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.3, color: 'var(--text-light)' }}>
                             Perfect for <strong>sneakers, boots, heels, work shoes & more.</strong>
                         </p>
                     </FadeIn>
@@ -602,7 +638,7 @@ function App() {
                     <div className="testimonials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                         <FadeIn delay={0.1}>
                             <div className="testimonial-card glass-card" style={{ padding: '2.5rem 2rem', borderTop: '4px solid var(--accent)' }}>
-                                <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '1rem', color: '#ffc107' }}>
+                                <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '1rem', color: '#f0a500' }}>
                                     ★★★★★
                                 </div>
                                 <p style={{ fontSize: '1.1rem', fontStyle: 'italic', marginBottom: '2rem', lineHeight: '1.6' }}>
@@ -620,7 +656,7 @@ function App() {
 
                         <FadeIn delay={0.2}>
                             <div className="testimonial-card glass-card" style={{ padding: '2.5rem 2rem', borderTop: '4px solid #4a90e2' }}>
-                                <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '1rem', color: '#ffc107' }}>
+                                <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '1rem', color: '#f0a500' }}>
                                     ★★★★★
                                 </div>
                                 <p style={{ fontSize: '1.1rem', fontStyle: 'italic', marginBottom: '2rem', lineHeight: '1.6' }}>
@@ -638,7 +674,7 @@ function App() {
 
                         <FadeIn delay={0.3}>
                             <div className="testimonial-card glass-card" style={{ padding: '2.5rem 2rem', borderTop: '4px solid var(--accent)' }}>
-                                <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '1rem', color: '#ffc107' }}>
+                                <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '1rem', color: '#f0a500' }}>
                                     ★★★★★
                                 </div>
                                 <p style={{ fontSize: '1.1rem', fontStyle: 'italic', marginBottom: '2rem', lineHeight: '1.6' }}>
@@ -665,6 +701,8 @@ function App() {
                         <div className="glass-card" style={{ padding: '5rem 3rem', textAlign: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                             <h2 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#fff' }}>Order Yours Today</h2>
                             <p style={{ marginBottom: '3rem', fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto 3rem auto' }}>
+                                <strong style={{ color: '#fff' }}>Starting at {usd(BOTTLE_PRICE)} — as low as {usd(unitPriceFor(9))} a bottle when you stock up.</strong><br />
+                                <span style={{ color: '#86e3a3', fontWeight: 600 }}>Our 8 oz bottle is twice the size of 4 oz competitor sprays, at about the same price.</span><br />
                                 Confidence &amp; Freshness shipped to your door. Buy a single bottle or stock up — shipping drops as you add more, and orders of 5+ ship FREE.
                             </p>
                             <StoreWidget />
@@ -678,9 +716,6 @@ function App() {
                 <div className="container">
                     <h2 style={{ color: '#fff', marginBottom: '2rem', fontSize: '1.5rem', letterSpacing: '0.1em' }}>LA SHOE DE PEUGH</h2>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '3rem' }}>
-                        <a href="#" style={{ color: 'rgba(255,255,255,0.6)', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}><Instagram size={24} /></a>
-                        <a href="#" style={{ color: 'rgba(255,255,255,0.6)', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}><Twitter size={24} /></a>
-                        <a href="#" style={{ color: 'rgba(255,255,255,0.6)', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}><Facebook size={24} /></a>
                         <a href="mailto:lashoedepeugh@aol.com" aria-label="Email La Shoe de Peugh" style={{ color: 'rgba(255,255,255,0.6)', transition: 'color 0.3s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}><Mail size={24} /></a>
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem 2rem', fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginBottom: '2rem' }}>

@@ -39,7 +39,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('/assets/falling_leaves_bg.png');
+  background-image: url('/assets/falling_leaves_bg.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -201,6 +201,70 @@ h4 {
   z-index: 1;
 }
 
+/* Hero: product label above the headline + price/trust line under the buttons */
+.hero-eyebrow {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.hero-trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--text-light);
+}
+
+.hero-trust .stars {
+  color: #f0a500;
+  letter-spacing: 0.1em;
+}
+
+/* Mid-page buy band (after "A Closer Look") */
+.cta-band {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  padding: 1.25rem 2rem;
+}
+
+.cta-band img {
+  height: 90px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.cta-band-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cta-band-text strong {
+  font-family: 'Lora', serif;
+  font-size: 1.5rem;
+}
+
+.cta-band-text span {
+  color: var(--text-light);
+}
+
+@media (max-width: 640px) {
+  .cta-band {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+}
+
 /* Sections */
 section {
   padding: 8rem 0;
@@ -342,6 +406,10 @@ section {
     justify-content: center;
   }
 
+  .hero-trust {
+    justify-content: center;
+  }
+
   .hero-3d {
     position: relative;
     width: 100%;
@@ -374,6 +442,12 @@ section {
 
 /* Phones: drop the text nav links but KEEP the Buy Now pill so the CTA is
    always one tap away. */
+.nav-links-text {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
 @media (max-width: 768px) {
   .nav-links-text {
     display: none;
@@ -451,4 +525,22 @@ section {
 .visitor-counter svg {
   height: 1.7em !important;
   color: #e3c67b;
+}
+
+/* Phones: keep the two hero buttons on one line each */
+@media (max-width: 480px) {
+  .btn-group .btn {
+    padding: 0.9rem 1.4rem;
+    white-space: nowrap;
+  }
+
+  .hero-eyebrow {
+    letter-spacing: 0.1em;
+  }
+}
+
+/* Size-value line in the mid-page buy band */
+.cta-band-text .cta-band-size {
+  color: var(--accent);
+  font-weight: 600;
 }
