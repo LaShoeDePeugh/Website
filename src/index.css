@@ -979,3 +979,23 @@ section {
   .snowflake:nth-child(3n + 2) { top: 84%; }
   .peppermint { animation: none; }
 }
+
+/* Phones/tablets (hero stacks: copy, then bottle). The bottle canvas used to be
+   pulled UP 4rem (margin-top: -4rem), which put the sprayer on top of the
+   price/trust line; and the hero's 8rem bottom padding plus #about's 8rem top
+   padding left a ~300px empty band before "Step Out with Confidence". */
+@media (max-width: 968px) {
+  .hero {
+    min-height: auto;
+    padding-bottom: 0;
+  }
+
+  .hero-3d {
+    margin-top: 1.25rem;
+    height: min(60vh, 540px);
+  }
+
+  #about {
+    padding-top: 1.5rem;
+  }
+}
