@@ -18,16 +18,33 @@ const FadeIn = ({ children, delay = 0 }) => {
     );
 };
 
-// One "Fresh Fits" block: title + photo, with an optional clip that plays over the
-// photo on hover/focus. Phones have no hover, so there the block crossing the middle
-// of the screen plays instead. Clips only download once they first play.
-const GalleryTile = ({ title, image, clip }) => {
-    const tileRef = useRef(null);
+// ── Fresh Fits gallery ────────────────────────────────────────────
+// All nine footwear blocks show at once in a 3x3 grid. The block under the
+// pointer grows over its neighbours and plays its clip; clicking (or
+// Enter/Space) opens it enlarged and centred in a lightbox with its clip,
+// prev/next arrows and Esc/backdrop to close. Phones have no hover, so there a
+// tap goes straight to the lightbox. Clips only download once they first play.
+const GALLERY_TILES = [
+    { title: "Gym Shoes", image: "lsdp_gym_shoes_clean.jpg", clip: "lsdp_gym_shoes.mp4" },
+    { title: "Dress Shoes", image: "lsdp_office_shoes_clean.jpg", clip: "lsdp_office_shoes.mp4" },
+    { title: "Hiking Boots", image: "lsdp_work_boots_clean.jpg", clip: "lsdp_work_boots.mp4" },
+    { title: "House Slippers", image: "lsdp_slippers_clean.jpg", clip: "lsdp_slippers.mp4" },
+    { title: "Kids Shoes", image: "lsdp_kids_shoes_clean.jpg", clip: "lsdp_kids_shoes.mp4" },
+    { title: "Skate Shoes", image: "lsdp_skate_shoes_clean.jpg", clip: "lsdp_skate_shoes.mp4" },
+    { title: "Winter Boots", image: "lsdp_winter_boots_clean.jpg", clip: "lsdp_winter_boots.mp4" },
+    { title: "Motorcycle Boots", image: "lsdp_motorcycle_boots_clean.jpg", clip: "lsdp_motorcycle_boots.mp4" },
+    { title: "Jogging Shoes", image: "lsdp_jogging_shoes_clean.jpg", clip: "lsdp_jogging_shoes.mp4" },
+];
+
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// One block in the grid.
+const GalleryTile = ({ title, image, clip, onOpen }) => {
     const videoRef = useRef(null);
     const [playing, setPlaying] = useState(false);
 
     const start = () => {
-        if (!videoRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (!videoRef.current || prefersReducedMotion() || window.matchMedia('(hover: none)').matches) return;
         videoRef.current.play().catch(() => {});
     };
     const stop = () => {
@@ -36,22 +53,16 @@ const GalleryTile = ({ title, image, clip }) => {
         videoRef.current.currentTime = 0;
         setPlaying(false);
     };
-
-    useEffect(() => {
-        if (!clip || !window.matchMedia('(hover: none)').matches) return;
-        const observer = new IntersectionObserver(
-            ([entry]) => (entry.isIntersecting ? start() : stop()),
-            { rootMargin: '-50% 0px -50% 0px' }
-        );
-        observer.observe(tileRef.current);
-        return () => observer.disconnect();
-    }, [clip]);
+    const open = () => { stop(); onOpen(); };
 
     return (
         <div
-            ref={tileRef}
             className="gallery-item glass-card"
-            tabIndex={clip ? 0 : undefined}
+            role="button"
+            tabIndex={0}
+            aria-label={`Enlarge ${title}`}
+            onClick={open}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } }}
             onMouseEnter={start}
             onMouseLeave={stop}
             onFocus={start}
@@ -59,7 +70,7 @@ const GalleryTile = ({ title, image, clip }) => {
         >
             <h3 className="gallery-title">{title}</h3>
             <div className="gallery-media">
-                <img src={`/assets/${image}`} alt={title} loading="lazy" />
+                <img src={`/assets/${image}`} alt={title} loading="lazy" draggable="false" />
                 {clip && (
                     <video
                         ref={videoRef}
@@ -75,6 +86,79 @@ const GalleryTile = ({ title, image, clip }) => {
                 )}
             </div>
         </div>
+    );
+};
+
+// The enlarged, centred view. Arrow keys / buttons step through all nine.
+const GalleryLightbox = ({ index, onClose, onStep }) => {
+    const tile = GALLERY_TILES[index];
+    const closeRef = useRef(null);
+
+    useEffect(() => {
+        const onKey = (e) => {
+            if (e.key === 'Escape') onClose();
+            else if (e.key === 'ArrowRight') onStep(1);
+            else if (e.key === 'ArrowLeft') onStep(-1);
+        };
+        document.addEventListener('keydown', onKey);
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden'; // no page scroll behind the lightbox
+        const prevFocus = document.activeElement;
+        closeRef.current?.focus();
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.body.style.overflow = prevOverflow;
+            prevFocus?.focus?.({ preventScroll: true });
+        };
+    }, [onClose, onStep]);
+
+    return (
+        <div className="lightbox" role="dialog" aria-modal="true" aria-label={tile.title} onClick={onClose}>
+            <div className="lightbox-card" onClick={(e) => e.stopPropagation()}>
+                <button ref={closeRef} className="lightbox-close" onClick={onClose} aria-label="Close">×</button>
+                <h3 className="gallery-title lightbox-title">{tile.title}</h3>
+                <div className="lightbox-media">
+                    {tile.clip && !prefersReducedMotion() ? (
+                        <video
+                            key={tile.clip}
+                            src={`/assets/video/${tile.clip}`}
+                            poster={`/assets/${tile.image}`}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            aria-label={tile.title}
+                        />
+                    ) : (
+                        <img src={`/assets/${tile.image}`} alt={tile.title} />
+                    )}
+                </div>
+                <button className="lightbox-nav lightbox-prev" onClick={() => onStep(-1)} aria-label="Previous">‹</button>
+                <button className="lightbox-nav lightbox-next" onClick={() => onStep(1)} aria-label="Next">›</button>
+                <p className="lightbox-count">{index + 1} / {GALLERY_TILES.length}</p>
+            </div>
+        </div>
+    );
+};
+
+// The grid of nine plus the lightbox for whichever block was clicked.
+const GalleryGrid = () => {
+    const [open, setOpen] = useState(null);
+    const close = React.useCallback(() => setOpen(null), []);
+    const step = React.useCallback(
+        (d) => setOpen((i) => (i + d + GALLERY_TILES.length) % GALLERY_TILES.length),
+        []
+    );
+
+    return (
+        <>
+            <div className="gallery-grid">
+                {GALLERY_TILES.map((tile, i) => (
+                    <GalleryTile key={tile.title} {...tile} onOpen={() => setOpen(i)} />
+                ))}
+            </div>
+            {open !== null && <GalleryLightbox index={open} onClose={close} onStep={step} />}
+        </>
     );
 };
 
@@ -307,6 +391,13 @@ const VisitorCounter = () => {
     const [count, setCount] = useState(null);
 
     useEffect(() => {
+        // Local dev only: show a placeholder and NEVER call the real Worker
+        // (that would add to the live count). Vite strips this from production builds.
+        if (import.meta.env.DEV) {
+            setCount(1216);
+            return undefined;
+        }
+
         const COUNTED = 'lsdp_counted';   // has this browser been counted?
         const CACHE = 'lsdp_count_cache'; // last real total we displayed
         let cancelled = false;
@@ -337,6 +428,7 @@ const VisitorCounter = () => {
 
     return (
         <p className="visitor-counter">
+            <WalkingShoes />
             <ShoePrints />
             <span><strong>{count.toLocaleString()}</strong> have visited to save their soles</span>
             <ShoePrints />
@@ -365,9 +457,94 @@ const ShoePrints = ({ style }) => (
     </svg>
 );
 
+// ── Walking shoes ("shoe parade") ─────────────────────────────────
+// Little photo-real shoes that stroll left-to-right across the visitor-counter
+// band, behind the text. Images are AI-generated side-view product shots, cut
+// out to transparent WebP (public/assets/parade/, ~4–10 KB each, toes facing
+// right). They all walk at the SAME pace and are spaced evenly (one slot each),
+// so they never bunch up or overlap. `h` is each shoe's display height in px, set
+// so they look true to scale next to each other (tall boots, flat flip-flop).
+// Pure CSS animation — see `.walking-shoes` in index.css (hidden for
+// reduced-motion users; `phone: true` marks the evenly spaced few shown on phones).
+const WALKING_SHOES = [
+    { kind: 'workboot', h: 27, stride: 0.8, phone: true },
+    { kind: 'sneaker', h: 21, stride: 0.55 },
+    { kind: 'heel', h: 24, stride: 0.42 },
+    { kind: 'motoboot', h: 30, stride: 0.85, phone: true },
+    { kind: 'flipflop', h: 12, stride: 0.38 },
+    { kind: 'cowboy', h: 30, stride: 0.75 },
+    { kind: 'workboot', h: 27, stride: 0.75, phone: true },
+    { kind: 'loafer', h: 19, stride: 0.7 },
+    { kind: 'motoboot', h: 30, stride: 0.8 },
+];
+
+const WalkingShoes = () => (
+    <span className="walking-shoes" aria-hidden="true">
+        {WALKING_SHOES.map(({ kind, h, phone, stride }, i) => (
+            <span
+                key={i}
+                className={`walk-lane walk-${kind}${phone ? ' walk-phone' : ''}`}
+                style={{ '--slot': i / WALKING_SHOES.length, '--stride': `${stride}s`, '--h': `${h}px` }}
+            >
+                <span className="walk-step">
+                    <img src={`/assets/parade/${kind}.webp`} alt="" draggable="false" />
+                </span>
+            </span>
+        ))}
+    </span>
+);
+
+// ── Holiday backdrop (seasonal) ───────────────────────────────────
+// A light touch of holiday: soft snow drifting down behind everything, plus a
+// few peppermint candies (on-brand!) floating near the page edges. It sits in
+// the page background (behind all content, never clickable) and switches itself
+// OFF after HOLIDAY_UNTIL, so nothing needs deploying when the season ends.
+// Still for reduced-motion visitors. Positions/sizes are fixed (not random) so
+// the page looks the same on every load.
+const HOLIDAY_UNTIL = new Date(2027, 0, 7); // shown through Jan 6, 2027
+
+const SNOW = Array.from({ length: 28 }, (_, i) => ({
+    left: (i * 37 + 11) % 100,             // spread across the width
+    size: 3 + ((i * 7) % 5),               // 3–7px
+    dur: 14 + ((i * 5) % 12),              // 14–25s to fall the full page
+    delay: -((i * 3.7) % 25),              // already mid-fall on load
+    sway: 10 + ((i * 13) % 30),            // sideways drift, px
+}));
+
+const CANDIES = [
+    { left: '2.5%', top: '22%', size: 34, dur: 9 },
+    { left: '94%', top: '38%', size: 28, dur: 11 },
+    { left: '5%', top: '68%', size: 24, dur: 10 },
+    { left: '91%', top: '80%', size: 36, dur: 12 },
+    { left: '47%', top: '92%', size: 22, dur: 8 },
+];
+
+const HolidayBackdrop = () => {
+    if (new Date() >= HOLIDAY_UNTIL) return null;
+    return (
+        <div className="holiday-bg" aria-hidden="true">
+            {SNOW.map((f, i) => (
+                <span
+                    key={i}
+                    className="snowflake"
+                    style={{ left: `${f.left}%`, width: f.size, height: f.size, '--dur': `${f.dur}s`, '--delay': `${f.delay}s`, '--sway': `${f.sway}px` }}
+                />
+            ))}
+            {CANDIES.map((c, i) => (
+                <span
+                    key={i}
+                    className="peppermint"
+                    style={{ left: c.left, top: c.top, width: c.size, height: c.size, '--dur': `${c.dur}s` }}
+                />
+            ))}
+        </div>
+    );
+};
+
 function App() {
     return (
         <div className="app">
+            <HolidayBackdrop />
             {/* Premium Navigation */}
             <nav className="navbar">
                 <VisitorCounter />
@@ -594,23 +771,7 @@ function App() {
                     <FadeIn>
                         <h2 className="section-title">Fresh Fits for Every Footwear</h2>
                     </FadeIn>
-                    <div className="gallery-grid">
-                        {[
-                            { title: "Gym Shoes", image: "lsdp_gym_shoes_clean.jpg", clip: "lsdp_gym_shoes.mp4" },
-                            { title: "Dress Shoes", image: "lsdp_office_shoes_clean.jpg", clip: "lsdp_office_shoes.mp4" },
-                            { title: "Hiking Boots", image: "lsdp_work_boots_clean.jpg", clip: "lsdp_work_boots.mp4" },
-                            { title: "House Slippers", image: "lsdp_slippers_clean.jpg", clip: "lsdp_slippers.mp4" },
-                            { title: "Kids Shoes", image: "lsdp_kids_shoes_clean.jpg", clip: "lsdp_kids_shoes.mp4" },
-                            { title: "Skate Shoes", image: "lsdp_skate_shoes_clean.jpg", clip: "lsdp_skate_shoes.mp4" },
-                            { title: "Winter Boots", image: "lsdp_winter_boots_clean.jpg", clip: "lsdp_winter_boots.mp4" },
-                            { title: "Motorcycle Boots", image: "lsdp_motorcycle_boots_clean.jpg", clip: "lsdp_motorcycle_boots.mp4" },
-                            { title: "Jogging Shoes", image: "lsdp_jogging_shoes_clean.jpg", clip: "lsdp_jogging_shoes.mp4" }
-                        ].map((tile, index) => (
-                            <FadeIn key={tile.title} delay={index * 0.05}>
-                                <GalleryTile {...tile} />
-                            </FadeIn>
-                        ))}
-                    </div>
+                    <GalleryGrid />
                     <FadeIn>
                         <p style={{ textAlign: 'center', marginTop: '4rem', fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.3, color: 'var(--text-light)' }}>
                             Perfect for <strong>sneakers, boots, heels, work shoes & more.</strong>
@@ -628,9 +789,12 @@ function App() {
                             site or in the refund policy. "Saving their soles" also echoes the
                             footer visitor counter, so the two now share a voice. */}
                         <p className="testimonials-intro">
-                            <span>Discover why athletes, professionals, and everyday people trust</span>
                             <span className="testimonials-tagline">
-                                <span><strong>La Shoe de Peugh</strong> <em>To Save Their Soles</em></span>
+                                <ShoePrints />
+                                <span className="tagline-words">
+                                    <span className="tagline-lead">Discover why athletes, professionals, and everyday people trust</span>
+                                    <span className="tagline-brand"><strong>La Shoe de Peugh</strong> <em>To Save Their Soles</em></span>
+                                </span>
                                 <ShoePrints />
                             </span>
                         </p>
